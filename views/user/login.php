@@ -12,3 +12,4 @@
     <button type="submit">Войти</button>
 </form>
 <p>Нет аккаунта? <a href="index.php?route=register">Регистрация</a></p>
+<p><a href="index.php?route=forgot">Забыли пароль?</a></p>

@@ -1,5 +1,12 @@
-<h1>FAQ по гражданству США</h1>
-<p>Короткие ответы на самые частые базовые вопросы. Контент можно расширять через phpMyAdmin.</p>
+<div class="card">
+    <div class="page-header">
+        <div class="page-header-icon"></div>
+        <div class="page-header-text">
+            <h1>FAQ по гражданству США</h1>
+            <small>Мини‑справочник по самым типичным учебным вопросам.</small>
+        </div>
+    </div>
+    <p>Короткие ответы на самые частые базовые вопросы. Контент можно расширять через phpMyAdmin.</p>
 <?php if (!empty($items)): ?>
     <ul class="card-list">
         <?php foreach ($items as $row): ?>

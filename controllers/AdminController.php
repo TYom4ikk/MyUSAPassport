@@ -10,7 +10,9 @@ class AdminController extends Controller
         $userModel = new User();
         $user = $userModel->findById(Auth::userId());
         if (!$user || $user['role'] !== 'admin') {
-            echo 'Доступ запрещён';
+            $pageTitle = 'Доступ запрещён';
+            $viewFile = __DIR__ . '/../views/errors/denied.php';
+            $this->view($viewFile, compact('pageTitle'));
             exit;
         }
         return $user;
@@ -49,6 +51,17 @@ class AdminController extends Controller
         if ($caseId > 0 && $status !== '') {
             $caseModel = new CaseModel();
             $caseModel->updateStatus($caseId, $status);
+
+            // уведомление пользователю
+            global $pdo;
+            $stmt = $pdo->prepare('SELECT user_id FROM cases WHERE id = ?');
+            $stmt->execute([$caseId]);
+            $case = $stmt->fetch();
+            if ($case) {
+                $notification = new Notification();
+                $msg = 'Статус вашего кейса изменён администратором на: ' . $status;
+                $notification->add((int)$case['user_id'], $msg);
+            }
         }
 
         header('Location: index.php?route=admin');

@@ -4,6 +4,13 @@
     padding: 0;
 }
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 8px;
+}
+
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     background:
@@ -295,6 +302,40 @@ button[type="submit"] {
 .card small {
     font-size: 11px;
     color: #c4cce8;
+}
+
+/* ЗАГОЛОВКИ С РЕМАРКАМИ USA */
+
+.page-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.page-header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background:
+        linear-gradient(135deg, #b31942 0%, #b31942 33%, #ffffff 33%, #ffffff 66%, #0a3161 66%, #0a3161 100%);
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+}
+
+.page-header-text small {
+    display: block;
+    font-size: 12px;
+    color: #c4cce8;
+}
+
+.error-text {
+    color: #ff9fa5;
+    margin-bottom: 8px;
+}
+
+table.simple-table th,
+table.simple-table td {
+    padding: 4px 6px;
 }
 
 /* ЛИЧНЫЙ КАБИНЕТ, ЧЕК-ЛИСТЫ */

@@ -37,6 +37,10 @@ $router->get('register', 'UserController@register');
 $router->post('register', 'UserController@registerPost');
 $router->get('logout', 'UserController@logout');
 $router->get('profile', 'UserController@profile');
+$router->get('forgot', 'UserController@forgot');
+$router->post('forgot', 'UserController@forgotPost');
+$router->get('reset', 'UserController@reset');
+$router->post('reset', 'UserController@resetPost');
 
 $router->get('checklists', 'ChecklistController@index');
 $router->post('checklists/save', 'ChecklistController@save');
