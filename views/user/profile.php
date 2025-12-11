@@ -6,3 +6,6 @@
 
 <h2>Мои чек-листы</h2>
 <p><a href="index.php?route=checklists">Перейти к чек-листам</a></p>
+
+<h2>Мой кейс</h2>
+<p><a href="index.php?route=case">Перейти к кейсу и документам</a></p>

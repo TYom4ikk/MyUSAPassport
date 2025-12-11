@@ -56,3 +56,40 @@ CREATE TABLE inquiries (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+CREATE TABLE cases (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NOT NULL,
+    status ENUM(
+        'Not started',
+        'Collecting documents',
+        'Ready to file',
+        'Filed',
+        'Biometrics scheduled',
+        'Interview',
+        'Oath',
+        'Done'
+    ) NOT NULL DEFAULT 'Not started',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE case_documents (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    case_id INT UNSIGNED NOT NULL,
+    stage VARCHAR(100) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    file_path VARCHAR(255) NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (case_id) REFERENCES cases(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+CREATE TABLE wizard_responses (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    user_id INT UNSIGNED NULL,
+    data_json TEXT NOT NULL,
+    result ENUM('eligible','not_eligible') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;

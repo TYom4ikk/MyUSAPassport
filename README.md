@@ -17,3 +17,8 @@
 - SQL-схема с таблицами users, articles, categories, faq, news, checklists, inquiries.
 
 Дальше можно постепенно дописывать авторизацию, личный кабинет, админку и т.п.
+
+
+
+
+РЕФЕРЕНС: https://mircare.com/ru-ru/blog/kak-poluchit-grazhdanstvo-v-ssha

@@ -41,7 +41,18 @@ $router->get('profile', 'UserController@profile');
 $router->get('checklists', 'ChecklistController@index');
 $router->post('checklists/save', 'ChecklistController@save');
 
+$router->get('wizard', 'WizardController@start');
+$router->post('wizard/submit', 'WizardController@submit');
+
+$router->get('case', 'CaseController@index');
+$router->post('case/upload', 'CaseController@upload');
+
 $router->get('admin', 'AdminController@index');
+$router->post('admin/case/status', 'AdminController@updateCaseStatus');
+$router->post('admin/user/role', 'AdminController@updateUserRole');
+$router->post('admin/article/create', 'AdminController@createArticle');
+$router->post('admin/news/create', 'AdminController@createNews');
+$router->post('admin/faq/create', 'AdminController@createFaq');
 
 $route = isset($_GET['route']) ? trim($_GET['route'], '/') : '';
 $method = $_SERVER['REQUEST_METHOD'];

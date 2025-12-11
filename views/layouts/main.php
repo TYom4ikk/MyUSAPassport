@@ -63,6 +63,7 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
             <a href="<?php echo $baseUrl; ?>/index.php?route=faq">FAQ</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=news">Новости</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=articles">Статьи</a>
+            <a href="<?php echo $baseUrl; ?>/index.php?route=wizard">Анкета</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=contact">Обратная связь</a>
             <?php if (Auth::check()): ?>
                 <a href="<?php echo $baseUrl; ?>/index.php?route=profile">Личный кабинет</a>

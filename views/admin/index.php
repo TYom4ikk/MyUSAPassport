@@ -1,3 +1,160 @@
 <h1>Админ-панель</h1>
 <p>Вы вошли как администратор.</p>
-<p>В учебной версии панели пока только заглушка. Управление контентом можно делать через phpMyAdmin (таблицы <code>articles</code>, <code>categories</code>, <code>faq</code>, <code>users</code>, <code>news</code>).</p>
+
+<h2>Кейсы пользователей</h2>
+<p>Здесь можно менять статус кейса. Пользователь увидит его на странице "Мой кейс и документы".</p>
+
+<?php if (!empty($cases)): ?>
+    <div class="card">
+        <table style="width:100%; font-size: 13px; border-collapse: collapse;">
+            <tr>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">ID</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Пользователь</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Email</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Статус</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Изменить</th>
+            </tr>
+            <?php foreach ($cases as $c): ?>
+                <tr>
+                    <td style="padding:4px;">#<?php echo htmlspecialchars($c['id']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($c['user_name']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($c['user_email']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($c['status']); ?></td>
+                    <td style="padding:4px; ">
+                        <form method="post" action="index.php?route=admin/case/status">
+                            <input type="hidden" name="case_id" value="<?php echo htmlspecialchars($c['id']); ?>">
+                            <select name="status" style="font-size: 12px;">
+                                <option value="Not started" <?php echo $c['status']==='Not started' ? 'selected' : ''; ?>>Not started</option>
+                                <option value="Collecting documents" <?php echo $c['status']==='Collecting documents' ? 'selected' : ''; ?>>Collecting documents</option>
+                                <option value="Ready to file" <?php echo $c['status']==='Ready to file' ? 'selected' : ''; ?>>Ready to file</option>
+                                <option value="Filed" <?php echo $c['status']==='Filed' ? 'selected' : ''; ?>>Filed</option>
+                                <option value="Biometrics scheduled" <?php echo $c['status']==='Biometrics scheduled' ? 'selected' : ''; ?>>Biometrics scheduled</option>
+                                <option value="Interview" <?php echo $c['status']==='Interview' ? 'selected' : ''; ?>>Interview</option>
+                                <option value="Oath" <?php echo $c['status']==='Oath' ? 'selected' : ''; ?>>Oath</option>
+                                <option value="Done" <?php echo $c['status']==='Done' ? 'selected' : ''; ?>>Done</option>
+                            </select>
+                            <button type="submit" class="btn" style="padding:4px 10px; margin-left:4px;">Сохранить</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+<?php else: ?>
+    <p>Кейсов пока нет.</p>
+<?php endif; ?>
+
+<h2>Пользователи</h2>
+<?php if (!empty($users)): ?>
+    <div class="card" style="margin-top:8px;">
+        <table style="width:100%; font-size: 13px; border-collapse: collapse;">
+            <tr>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">ID</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Имя</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Email</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Роль</th>
+                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Смена роли</th>
+            </tr>
+            <?php foreach ($users as $u): ?>
+                <tr>
+                    <td style="padding:4px;">#<?php echo htmlspecialchars($u['id']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($u['name']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($u['email']); ?></td>
+                    <td style="padding:4px; "><?php echo htmlspecialchars($u['role']); ?></td>
+                    <td style="padding:4px; ">
+                        <form method="post" action="index.php?route=admin/user/role">
+                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($u['id']); ?>">
+                            <select name="role" style="font-size:12px;">
+                                <option value="user" <?php echo $u['role']==='user' ? 'selected' : ''; ?>>user</option>
+                                <option value="admin" <?php echo $u['role']==='admin' ? 'selected' : ''; ?>>admin</option>
+                            </select>
+                            <button type="submit" class="btn" style="padding:4px 10px; margin-left:4px;">OK</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+    </div>
+<?php else: ?>
+    <p>Пользователей пока нет.</p>
+<?php endif; ?>
+
+<h2>Статьи</h2>
+<div class="card" style="margin-top:8px;">
+    <h3>Создать статью</h3>
+    <form method="post" action="index.php?route=admin/article/create">
+        <label>Заголовок:
+            <input type="text" name="title">
+        </label>
+        <label>Текст:
+            <textarea name="content"></textarea>
+        </label>
+        <button type="submit" class="btn">Сохранить</button>
+    </form>
+    <h3 style="margin-top:10px;">Список статей</h3>
+    <?php if (!empty($articles)): ?>
+        <ul>
+            <?php foreach ($articles as $a): ?>
+                <li>
+                    <?php echo htmlspecialchars($a['title']); ?>
+                    <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>Статей пока нет.</p>
+    <?php endif; ?>
+</div>
+
+<h2>Новости</h2>
+<div class="card" style="margin-top:8px;">
+    <h3>Создать новость</h3>
+    <form method="post" action="index.php?route=admin/news/create">
+        <label>Заголовок:
+            <input type="text" name="title">
+        </label>
+        <label>Текст:
+            <textarea name="content"></textarea>
+        </label>
+        <button type="submit" class="btn">Сохранить</button>
+    </form>
+    <h3 style="margin-top:10px;">Список новостей</h3>
+    <?php if (!empty($news)): ?>
+        <ul>
+            <?php foreach ($news as $n): ?>
+                <li>
+                    <?php echo htmlspecialchars($n['title']); ?>
+                    <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>Новостей пока нет.</p>
+    <?php endif; ?>
+</div>
+
+<h2>FAQ</h2>
+<div class="card" style="margin-top:8px;">
+    <h3>Добавить вопрос</h3>
+    <form method="post" action="index.php?route=admin/faq/create">
+        <label>Вопрос:
+            <input type="text" name="question">
+        </label>
+        <label>Ответ:
+            <textarea name="answer"></textarea>
+        </label>
+        <button type="submit" class="btn">Сохранить</button>
+    </form>
+    <h3 style="margin-top:10px;">Список FAQ</h3>
+    <?php if (!empty($faq)): ?>
+        <ul>
+            <?php foreach ($faq as $f): ?>
+                <li>
+                    <strong><?php echo htmlspecialchars($f['question']); ?></strong>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p>FAQ пока пуст.</p>
+    <?php endif; ?>
+</div>
