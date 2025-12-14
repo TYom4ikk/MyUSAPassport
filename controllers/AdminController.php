@@ -10,6 +10,7 @@ class AdminController extends Controller
         $userModel = new User();
         $user = $userModel->findById(Auth::userId());
         if (!$user || $user['role'] !== 'admin') {
+            
             $pageTitle = 'Доступ запрещён';
             $viewFile = __DIR__ . '/../views/errors/denied.php';
             $this->view($viewFile, compact('pageTitle'));
@@ -91,12 +92,26 @@ class AdminController extends Controller
 
         $title = $_POST['title'] ?? '';
         $content = $_POST['content'] ?? '';
+        $imagePath = null;
+
+        if (!empty($_FILES['image']['name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $safeName = 'article_' . time() . '_' . mt_rand(1000, 9999) . ($ext ? ('.' . strtolower($ext)) : '');
+            $uploadDir = __DIR__ . '/../uploads/articles/';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0777, true);
+            }
+            $target = $uploadDir . $safeName;
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
+                $imagePath = 'uploads/articles/' . $safeName;
+            }
+        }
 
         if ($title && $content) {
             global $pdo;
             $slug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 150);
-            $stmt = $pdo->prepare('INSERT INTO articles (title, slug, content) VALUES (?, ?, ?)');
-            $stmt->execute([$title, $slug, $content]);
+            $stmt = $pdo->prepare('INSERT INTO articles (title, slug, content, image_url) VALUES (?, ?, ?, ?)');
+            $stmt->execute([$title, $slug, $content, $imagePath]);
         }
 
         header('Location: index.php?route=admin');
@@ -109,12 +124,26 @@ class AdminController extends Controller
 
         $title = $_POST['title'] ?? '';
         $content = $_POST['content'] ?? '';
+        $imagePath = null;
+
+        if (!empty($_FILES['image']['name']) && is_uploaded_file($_FILES['image']['tmp_name'])) {
+            $ext = pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION);
+            $safeName = 'news_' . time() . '_' . mt_rand(1000, 9999) . ($ext ? ('.' . strtolower($ext)) : '');
+            $uploadDir = __DIR__ . '/../uploads/news/';
+            if (!is_dir($uploadDir)) {
+                @mkdir($uploadDir, 0777, true);
+            }
+            $target = $uploadDir . $safeName;
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
+                $imagePath = 'uploads/news/' . $safeName;
+            }
+        }
 
         if ($title && $content) {
             global $pdo;
             $slug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 150);
-            $stmt = $pdo->prepare('INSERT INTO news (title, slug, content) VALUES (?, ?, ?)');
-            $stmt->execute([$title, $slug, $content]);
+            $stmt = $pdo->prepare('INSERT INTO news (title, slug, content, image_url) VALUES (?, ?, ?, ?)');
+            $stmt->execute([$title, $slug, $content, $imagePath]);
         }
 
         header('Location: index.php?route=admin');

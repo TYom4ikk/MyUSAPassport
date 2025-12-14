@@ -39,14 +39,36 @@
                 </tr>
             <?php endforeach; ?>
         </table>
-    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var toggles = document.querySelectorAll('.admin-toggle');
+    toggles.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var targetId = btn.getAttribute('data-target');
+            var el = document.getElementById(targetId);
+            if (!el) return;
+            if (el.style.display === 'none') {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+</div>
 <?php else: ?>
     <p>Кейсов пока нет.</p>
 <?php endif; ?>
 
 <h2>Пользователи</h2>
-<?php if (!empty($users)): ?>
-    <div class="card" style="margin-top:8px;">
+<div class="card" style="margin-top:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <p style="margin:0; font-size:13px; color:#4b5563;">Список зарегистрированных пользователей.</p>
+        <button type="button" class="btn btn-secondary admin-toggle" data-target="admin-users-table">Свернуть / развернуть</button>
+    </div>
+    <?php if (!empty($users)): ?>
+        <div id="admin-users-table">
         <table style="width:100%; font-size: 13px; border-collapse: collapse;">
             <tr>
                 <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">ID</th>
@@ -74,17 +96,21 @@
                 </tr>
             <?php endforeach; ?>
         </table>
-    </div>
-<?php else: ?>
-    <p>Пользователей пока нет.</p>
-<?php endif; ?>
+        </div>
+    <?php else: ?>
+        <p>Пользователей пока нет.</p>
+    <?php endif; ?>
+</div>
 
 <h2>Статьи</h2>
 <div class="card" style="margin-top:8px;">
     <h3>Создать статью</h3>
-    <form method="post" action="index.php?route=admin/article/create">
+    <form method="post" action="index.php?route=admin/article/create" enctype="multipart/form-data">
         <label>Заголовок:
             <input type="text" name="title">
+        </label>
+        <label>Обложка (изображение, необязательно):
+            <input type="file" name="image" accept="image/*">
         </label>
         <label>Текст:
             <textarea name="content"></textarea>
@@ -109,9 +135,12 @@
 <h2>Новости</h2>
 <div class="card" style="margin-top:8px;">
     <h3>Создать новость</h3>
-    <form method="post" action="index.php?route=admin/news/create">
+    <form method="post" action="index.php?route=admin/news/create" enctype="multipart/form-data">
         <label>Заголовок:
             <input type="text" name="title">
+        </label>
+        <label>Обложка (изображение, необязательно):
+            <input type="file" name="image" accept="image/*">
         </label>
         <label>Текст:
             <textarea name="content"></textarea>

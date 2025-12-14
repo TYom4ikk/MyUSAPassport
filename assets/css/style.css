@@ -4,24 +4,17 @@
     padding: 0;
 }
 
-.profile-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 14px;
-    margin-top: 8px;
-}
-
 body {
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background:
-        linear-gradient(rgba(10, 49, 97, 0.85), rgba(10, 49, 97, 0.95)),
-        url('https://upload.wikimedia.org/wikipedia/commons/a/ad/Statue_of_Liberty_7.jpg') center/cover fixed no-repeat;
-    color: #f5f7fb;
+    display: flex;
+    flex-direction: column;
     min-height: 100vh;
+    background-color: #f5f5f8;
+    color: #111827;
 }
 
 a {
-    color: inherit;
+    color: #b71414;
     text-decoration: none;
 }
 
@@ -37,29 +30,34 @@ a:hover {
 }
 
 .site-header {
-    background: rgba(10, 49, 97, 0.95);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    background: #ffffff;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
     position: sticky;
     top: 0;
     z-index: 100;
-    backdrop-filter: blur(12px);
 }
 
 .site-header .container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 40px;
     padding: 10px 16px;
 }
 
 .logo {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
     font-weight: 700;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: #ffffff;
+    color: #0f172a;
+}
+
+.logo-text {
+    font-size: 16px;
+    font-weight: 700;
 }
 
 .logo svg {
@@ -71,33 +69,36 @@ a:hover {
     gap: 14px;
     flex-wrap: wrap;
     font-size: 14px;
+    margin-left: auto;
 }
 
 .main-nav a {
     padding: 6px 10px;
     border-radius: 999px;
     border: 1px solid transparent;
-    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    color: #4b5563;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .main-nav a:hover {
-    background: #ffffff;
-    color: #0a3161;
-    border-color: rgba(10, 49, 97, 0.3);
+    background: rgba(183, 20, 20, 0.06);
+    color: #b71414;
+    border-color: rgba(183, 20, 20, 0.3);
     text-decoration: none;
 }
 
 .site-main {
     padding: 24px 0 40px;
+    flex: 1;
 }
 
 .site-footer {
-    background: rgba(0, 0, 0, 0.35);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    background: #f3f4f6;
+    border-top: 1px solid rgba(15, 23, 42, 0.06);
     padding: 14px 0;
     font-size: 13px;
     text-align: center;
-    color: #d2d7e5;
+    color: #6b7280;
 }
 
 /* HERO БЛОК НА ГЛАВНОЙ */
@@ -117,7 +118,7 @@ a:hover {
 
 .hero-text p {
     margin-bottom: 12px;
-    color: #e5e9f5;
+    color: #4b5563;
 }
 
 .hero-text ul {
@@ -129,11 +130,19 @@ a:hover {
     margin-bottom: 4px;
 }
 
+.profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 8px;
+}
+
 .hero-badge {
     display: inline-block;
     padding: 4px 10px;
     border-radius: 999px;
-    background: linear-gradient(120deg, #b31942, #e41e63);
+    background: rgba(183, 20, 20, 0.09);
+    color: #b71414;
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -150,8 +159,8 @@ a:hover {
     display: inline-block;
     padding: 8px 16px;
     border-radius: 999px;
-    background: #ffb347;
-    color: #28130f;
+    background: #b71414;
+    color: #ffffff;
     font-weight: 600;
     font-size: 14px;
     border: none;
@@ -161,20 +170,25 @@ a:hover {
 }
 
 .btn:hover {
-    background: #ffd27f;
+    background: #9d1010;
     transform: translateY(-1px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
     text-decoration: none;
 }
 
 .btn-secondary {
-    background: transparent;
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: #ffffff;
+    color: #4b5563;
+    border: 1px solid rgba(15, 23, 42, 0.12);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.12);
+    background: #f3f4f6;
+}
+
+.admin-toggle {
+    padding: 4px 10px;
+    font-size: 12px;
 }
 
 .hero-illustration {
@@ -183,13 +197,20 @@ a:hover {
 }
 
 .hero-card {
-    background: rgba(0, 0, 0, 0.4);
+    background: #ffffff;
     border-radius: 16px;
     padding: 18px 18px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 16px 35px rgba(15, 23, 42, 0.12);
     width: 100%;
     max-width: 340px;
+}
+
+.hero-card-image {
+    width: 100%;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    object-fit: cover;
 }
 
 .hero-card h3 {
@@ -199,7 +220,7 @@ a:hover {
 
 .hero-card p {
     font-size: 14px;
-    color: #dde3f7;
+    color: #4b5563;
     margin-bottom: 14px;
 }
 
@@ -208,14 +229,14 @@ a:hover {
     width: 100%;
     height: 10px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.15);
+    background: #e5e7eb;
     overflow: hidden;
 }
 
 .hero-progress-fill {
     width: 40%;
     height: 100%;
-    background: linear-gradient(90deg, #0a3161, #b31942, #ffffff);
+    background: linear-gradient(90deg, #b71414, #f97316);
 }
 
 .hero-progress-label {
@@ -232,6 +253,7 @@ h1, h2, h3 {
 
 p {
     margin-bottom: 8px;
+    color: #4b5563;
 }
 
 ol, ul {
@@ -244,8 +266,9 @@ form {
     margin-top: 8px;
     padding: 14px 16px;
     border-radius: 12px;
-    background: rgba(0, 0, 0, 0.45);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
 }
 
 label {
@@ -262,15 +285,31 @@ select {
     width: 100%;
     padding: 7px 9px;
     border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(10, 49, 97, 0.75);
-    color: #ffffff;
+    border: 1px solid rgba(156, 163, 175, 0.8);
+    background: #ffffff;
+    color: #111827;
     font-size: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="file"] {
+    width: 100%;
+    font-size: 13px;
 }
 
 textarea {
     min-height: 90px;
     resize: vertical;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #b71414;
+    box-shadow: 0 0 0 1px rgba(183, 20, 20, 0.4);
 }
 
 input[type="submit"],
@@ -288,10 +327,11 @@ button[type="submit"] {
 }
 
 .card {
-    background: rgba(0, 0, 0, 0.45);
+    background: #ffffff;
     border-radius: 12px;
     padding: 12px 14px;
-    border: 1px solid rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .card h3 {
@@ -301,7 +341,7 @@ button[type="submit"] {
 
 .card small {
     font-size: 11px;
-    color: #c4cce8;
+    color: #6b7280;
 }
 
 /* ЗАГОЛОВКИ С РЕМАРКАМИ USA */
@@ -317,19 +357,18 @@ button[type="submit"] {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background:
-        linear-gradient(135deg, #b31942 0%, #b31942 33%, #ffffff 33%, #ffffff 66%, #0a3161 66%, #0a3161 100%);
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.5);
+    background: radial-gradient(circle at 30% 30%, #fecaca, #b71414);
+    box-shadow: 0 0 0 2px rgba(248, 250, 252, 0.9);
 }
 
 .page-header-text small {
     display: block;
     font-size: 12px;
-    color: #c4cce8;
+    color: #6b7280;
 }
 
 .error-text {
-    color: #ff9fa5;
+    color: #b91c1c;
     margin-bottom: 8px;
 }
 
@@ -360,7 +399,8 @@ table.simple-table td {
     margin-top: 8px;
     padding: 10px 12px;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.4);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .checklist ul {
@@ -372,6 +412,59 @@ table.simple-table td {
     align-items: center;
     gap: 6px;
     margin-bottom: 4px;
+}
+
+/* ГЛАВНАЯ СТРАНИЦА: ДОПОЛНИТЕЛЬНЫЕ СЕКЦИИ */
+
+.home-sections {
+    margin-top: 32px;
+    display: grid;
+    gap: 24px;
+}
+
+.home-section h2 {
+    margin-bottom: 12px;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 14px;
+}
+
+.step-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+.step-number {
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    background: #b71414;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.feature-card {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.feature-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: radial-gradient(circle at 30% 30%, #fee2e2, #b71414);
 }
 
 /* ПРОСТАЯ АДАПТИВНОСТЬ */

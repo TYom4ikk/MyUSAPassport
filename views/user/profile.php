@@ -29,6 +29,12 @@
     </div>
 
     <div class="card">
+        <h2>Анкета (wizard)</h2>
+        <p>Пройдите учебную анкету, чтобы оценить свои исходные данные и возможный путь к гражданству.</p>
+        <p><a href="index.php?route=wizard" class="btn btn-secondary">Открыть анкету</a></p>
+    </div>
+
+    <div class="card">
         <h2>Уведомления</h2>
         <?php if (!empty($notifications)): ?>
             <ul>
@@ -42,5 +48,11 @@
         <?php else: ?>
             <p>Пока нет уведомлений.</p>
         <?php endif; ?>
+    </div>
+
+    <div class="card">
+        <h2>Обратная связь</h2>
+        <p>Если хотите протестировать отправку учебного запроса, перейдите к форме обратной связи.</p>
+        <p><a href="index.php?route=contact" class="btn btn-secondary">Перейти к форме</a></p>
     </div>
 </div>

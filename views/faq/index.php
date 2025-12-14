@@ -10,7 +10,7 @@
 <?php if (!empty($items)): ?>
     <ul class="card-list">
         <?php foreach ($items as $row): ?>
-            <li>
+            <li class="card faq-item">
                 <strong><?php echo htmlspecialchars($row['question']); ?></strong><br>
                 <?php echo nl2br(htmlspecialchars($row['answer'])); ?>
             </li>
