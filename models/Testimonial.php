@@ -16,13 +16,12 @@ class Testimonial {
         return $stmt->execute([$inquiryId, $userId, $userName, $rating, $content]);
     }
     
-    // Получить одобренные отзывы для главной страницы
-    public function getApprovedForHomepage($limit = 6) {
+    // Получить все отзывы для главной страницы (не только одобренные)
+    public function getAllForHomepage($limit = 20) {
         $stmt = $this->pdo->prepare("
             SELECT t.*, u.avatar, u.email
             FROM testimonials t
             LEFT JOIN users u ON t.user_id = u.id
-            WHERE t.status = 'approved' AND t.rating >= 4
             ORDER BY t.created_at DESC
             LIMIT " . (int)$limit
         );

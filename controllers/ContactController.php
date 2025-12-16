@@ -26,6 +26,25 @@ class ContactController extends Controller
             $model = new Inquiry();
             $userId = Auth::userId();
             
+            // Проверяем не отправлялся ли такой же отзыв недавно (защита от дублирования)
+            if ($rating) {
+                global $pdo;
+                $checkStmt = $pdo->prepare("
+                    SELECT COUNT(*) as count 
+                    FROM testimonials t 
+                    JOIN inquiries i ON t.inquiry_id = i.id 
+                    WHERE t.user_id = ? AND t.rating = ? AND t.content = ? AND t.created_at > DATE_SUB(NOW(), INTERVAL 1 MINUTE)
+                ");
+                $checkStmt->execute([$userId, $rating, $message]);
+                $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
+                
+                if ($result['count'] > 0) {
+                    $info = 'Такой отзыв был отправлен менее минуты назад. Пожалуйста, подождите.';
+                    $this->sendAjaxResponse($info);
+                    return;
+                }
+            }
+            
             // Добавляем рейтинг в сообщение для сохранения в inquiries
             $fullMessage = $message;
             if ($rating) {
@@ -42,7 +61,6 @@ class ContactController extends Controller
                     $user = $userModel->findById($userId);
                     
                     // Получаем ID созданного inquiry
-                    global $pdo;
                     $stmt = $pdo->prepare("SELECT LAST_INSERT_ID() as id");
                     $stmt->execute();
                     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -72,6 +90,15 @@ class ContactController extends Controller
         echo json_encode([
             'success' => true,
             'message' => $info,
+        ]);
+        exit;
+    }
+    
+    private function sendAjaxResponse($message) {
+        header('Content-Type: application/json');
+        echo json_encode([
+            'success' => false,
+            'message' => $message,
         ]);
         exit;
     }

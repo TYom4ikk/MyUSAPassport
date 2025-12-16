@@ -144,7 +144,7 @@
         <div class="testimonials-grid">
             <?php
             $testimonialModel = new Testimonial();
-            $testimonials = $testimonialModel->getApprovedForHomepage(12); // Только одобренные отзывы
+            $testimonials = $testimonialModel->getAllForHomepage(20); // Все отзывы со статусами
             
             if (!empty($testimonials)):
                 foreach ($testimonials as $testimonial):
@@ -166,14 +166,31 @@
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                     <span class="star <?php echo $i <= $testimonial['rating'] ? 'filled' : ''; ?>">★</span>
                                 <?php endfor; ?>
+                                <span><?php echo $testimonial['rating']; ?>/5</span>
                             </div>
+                            <?php
+                            // Показываем статус отзыва
+                            $statusClass = '';
+                            $statusText = '';
+                            if ($testimonial['status'] === 'pending') {
+                                $statusClass = 'status-new';
+                                $statusText = 'Новый';
+                            } elseif ($testimonial['status'] === 'approved') {
+                                $statusClass = 'status-approved';
+                                $statusText = 'Одобрен';
+                            } elseif ($testimonial['status'] === 'featured') {
+                                $statusClass = 'status-featured';
+                                $statusText = 'Избранный';
+                            }
+                            ?>
+                            <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
                         </div>
                     </div>
                     <div class="testimonial-content">
                         <p><?php echo htmlspecialchars($testimonial['content']); ?></p>
                     </div>
                     <div class="testimonial-date">
-                        <small><?php echo date('d.m.Y', strtotime($testimonial['created_at'])); ?></small>
+                        <small><?php echo date('d.m.Y H:i', strtotime($testimonial['created_at'])); ?></small>
                     </div>
                 </div>
             <?php 
@@ -338,7 +355,9 @@
 
 .testimonial-rating {
     display: flex;
-    gap: 2px;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 5px;
 }
 
 .testimonial-rating .star {
@@ -348,6 +367,31 @@
 
 .testimonial-rating .star.filled {
     color: #ffd700;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-left: 8px;
+}
+
+.status-new {
+    background: #ffc107;
+    color: #333;
+}
+
+.status-approved {
+    background: #28a745;
+    color: white;
+}
+
+.status-featured {
+    background: #007bff;
+    color: white;
 }
 
 .testimonial-content {

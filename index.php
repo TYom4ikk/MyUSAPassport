@@ -55,6 +55,8 @@ $router->post('case/upload', 'CaseController@upload');
 // чек-листы
 $router->get('checklists', 'ChecklistController@index');
 $router->post('checklists/save', 'ChecklistController@save');
+$router->post('checklists/updateStep', 'ChecklistController@updateStep');
+$router->post('checklists/assignCase', 'ChecklistController@assignCase');
 
 // админ-панель
 $router->get('admin', 'AdminController@index');
