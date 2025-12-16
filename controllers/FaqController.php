@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/../models/Faq.php';
+
 class FaqController extends Controller
 {
     public function index()

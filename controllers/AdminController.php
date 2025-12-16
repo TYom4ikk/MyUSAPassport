@@ -65,6 +65,15 @@ class AdminController extends Controller
             }
         }
 
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit;
+        }
+
         header('Location: index.php?route=admin');
         exit;
     }
@@ -80,6 +89,14 @@ class AdminController extends Controller
             global $pdo;
             $stmt = $pdo->prepare('UPDATE users SET role = ? WHERE id = ?');
             $stmt->execute([$role, $userId]);
+        }
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true]);
+            exit;
         }
 
         header('Location: index.php?route=admin');
@@ -109,9 +126,41 @@ class AdminController extends Controller
 
         if ($title && $content) {
             global $pdo;
-            $slug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 150);
+            $baseSlug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 120);
+            $slug = $baseSlug . '-' . time() . '-' . mt_rand(1000, 9999);
             $stmt = $pdo->prepare('INSERT INTO articles (title, slug, content, image_url) VALUES (?, ?, ?, ?)');
             $stmt->execute([$title, $slug, $content, $imagePath]);
+
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+            if ($isAjax) {
+                // вернуть обновлённый список статей
+                $articles = $pdo->query('SELECT id, title, created_at FROM articles ORDER BY created_at DESC')->fetchAll();
+                ob_start();
+                ?>
+                <ul>
+                    <?php foreach ($articles as $a): ?>
+                        <li>
+                            <?php echo htmlspecialchars($a['title']); ?>
+                            <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
+                            <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($a['id']); ?>">
+                                <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php
+                $html = ob_get_clean();
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success'  => true,
+                    'targetId' => 'admin-articles-list',
+                    'html'     => $html,
+                ]);
+                exit;
+            }
         }
 
         header('Location: index.php?route=admin');
@@ -141,9 +190,40 @@ class AdminController extends Controller
 
         if ($title && $content) {
             global $pdo;
-            $slug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 150);
+            $baseSlug = substr(preg_replace('~[^a-z0-9]+~i', '-', strtolower($title)), 0, 120);
+            $slug = $baseSlug . '-' . time() . '-' . mt_rand(1000, 9999);
             $stmt = $pdo->prepare('INSERT INTO news (title, slug, content, image_url) VALUES (?, ?, ?, ?)');
             $stmt->execute([$title, $slug, $content, $imagePath]);
+
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+            if ($isAjax) {
+                $news = $pdo->query('SELECT id, title, created_at FROM news ORDER BY created_at DESC')->fetchAll();
+                ob_start();
+                ?>
+                <ul>
+                    <?php foreach ($news as $n): ?>
+                        <li>
+                            <?php echo htmlspecialchars($n['title']); ?>
+                            <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
+                            <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($n['id']); ?>">
+                                <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php
+                $html = ob_get_clean();
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success'  => true,
+                    'targetId' => 'admin-news-list',
+                    'html'     => $html,
+                ]);
+                exit;
+            }
         }
 
         header('Location: index.php?route=admin');
@@ -161,6 +241,175 @@ class AdminController extends Controller
             global $pdo;
             $stmt = $pdo->prepare('INSERT INTO faq (question, answer) VALUES (?, ?)');
             $stmt->execute([$question, $answer]);
+
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+            if ($isAjax) {
+                $faq = $pdo->query('SELECT id, question FROM faq ORDER BY id DESC')->fetchAll();
+                ob_start();
+                ?>
+                <ul>
+                    <?php foreach ($faq as $f): ?>
+                        <li>
+                            <strong><?php echo htmlspecialchars($f['question']); ?></strong>
+                            <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                                <input type="hidden" name="id" value="<?php echo htmlspecialchars($f['id']); ?>">
+                                <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                            </form>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+                <?php
+                $html = ob_get_clean();
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success'  => true,
+                    'targetId' => 'admin-faq-list',
+                    'html'     => $html,
+                ]);
+                exit;
+            }
+        }
+
+        header('Location: index.php?route=admin');
+        exit;
+    }
+
+    public function deleteArticle()
+    {
+        $this->checkAdmin();
+
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+
+        if ($id > 0) {
+            global $pdo;
+            $stmt = $pdo->prepare('DELETE FROM articles WHERE id = ?');
+            $stmt->execute([$id]);
+        }
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            global $pdo;
+            $articles = $pdo->query('SELECT id, title, created_at FROM articles ORDER BY created_at DESC')->fetchAll();
+            ob_start();
+            ?>
+            <ul>
+                <?php foreach ($articles as $a): ?>
+                    <li>
+                        <?php echo htmlspecialchars($a['title']); ?>
+                        <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
+                        <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($a['id']); ?>">
+                            <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
+            $html = ob_get_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'  => true,
+                'targetId' => 'admin-articles-list',
+                'html'     => $html,
+            ]);
+            exit;
+        }
+
+        header('Location: index.php?route=admin');
+        exit;
+    }
+
+    public function deleteNews()
+    {
+        $this->checkAdmin();
+
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+
+        if ($id > 0) {
+            global $pdo;
+            $stmt = $pdo->prepare('DELETE FROM news WHERE id = ?');
+            $stmt->execute([$id]);
+        }
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            global $pdo;
+            $news = $pdo->query('SELECT id, title, created_at FROM news ORDER BY created_at DESC')->fetchAll();
+            ob_start();
+            ?>
+            <ul>
+                <?php foreach ($news as $n): ?>
+                    <li>
+                        <?php echo htmlspecialchars($n['title']); ?>
+                        <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
+                        <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($n['id']); ?>">
+                            <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
+            $html = ob_get_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'  => true,
+                'targetId' => 'admin-news-list',
+                'html'     => $html,
+            ]);
+            exit;
+        }
+
+        header('Location: index.php?route=admin');
+        exit;
+    }
+
+    public function deleteFaq()
+    {
+        $this->checkAdmin();
+
+        $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
+
+        if ($id > 0) {
+            global $pdo;
+            $stmt = $pdo->prepare('DELETE FROM faq WHERE id = ?');
+            $stmt->execute([$id]);
+        }
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            global $pdo;
+            $faq = $pdo->query('SELECT id, question FROM faq ORDER BY id DESC')->fetchAll();
+            ob_start();
+            ?>
+            <ul>
+                <?php foreach ($faq as $f): ?>
+                    <li>
+                        <strong><?php echo htmlspecialchars($f['question']); ?></strong>
+                        <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                            <input type="hidden" name="id" value="<?php echo htmlspecialchars($f['id']); ?>">
+                            <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
+                        </form>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+            <?php
+            $html = ob_get_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'  => true,
+                'targetId' => 'admin-faq-list',
+                'html'     => $html,
+            ]);
+            exit;
         }
 
         header('Location: index.php?route=admin');

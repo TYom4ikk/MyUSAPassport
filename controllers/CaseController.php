@@ -58,6 +58,40 @@ class CaseController extends Controller
         }
 
         $documents = $docModel->forCase((int)$case['id']);
+
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        if ($isAjax) {
+            ob_start();
+            ?>
+            <?php if (!empty($documents)): ?>
+                <ul class="card-list">
+                    <?php foreach ($documents as $d): ?>
+                        <li>
+                            <strong><?php echo htmlspecialchars($d['title']); ?></strong><br>
+                            Этап: <?php echo htmlspecialchars($d['stage']); ?><br>
+                            <a href="<?php echo htmlspecialchars($d['file_path']); ?>" target="_blank">Открыть файл</a><br>
+                            <small>Загружено: <?php echo htmlspecialchars($d['uploaded_at']); ?></small>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <p>Документов пока нет.</p>
+            <?php endif; ?>
+            <?php
+            $html = ob_get_clean();
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success'      => true,
+                'targetId'     => 'case-documents-list',
+                'html'         => $html,
+                'message'      => $info,
+                'messageTarget'=> 'case-upload-message',
+            ]);
+            exit;
+        }
+
         $pageTitle = 'Мой кейс и документы';
         $viewFile = __DIR__ . '/../views/case/index.php';
         $this->view($viewFile, compact('pageTitle', 'case', 'documents', 'info'));

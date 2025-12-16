@@ -1,4 +1,5 @@
 <?php
+
 class Faq
 {
     private PDO $pdo;
@@ -11,7 +12,8 @@ class Faq
 
     public function all()
     {
-        $stmt = $this->pdo->query('SELECT * FROM faq');
+        $stmt = $this->pdo->query('SELECT * FROM faq ORDER BY id DESC');
         return $stmt->fetchAll();
     }
 }
+

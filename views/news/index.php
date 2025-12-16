@@ -1,7 +1,7 @@
 <h1>Новости</h1>
 <p>Здесь можно публиковать важные обновления и заметки, связанные с иммиграцией и гражданством США.</p>
 <?php if (!empty($items)): ?>
-    <ul class="card-list">
+    <ul class="card-list card-list-single">
         <?php foreach ($items as $row): ?>
             <li class="card">
                 <?php if (!empty($row['image_url'])): ?>

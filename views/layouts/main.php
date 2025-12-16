@@ -24,12 +24,13 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
         echo '<link rel="stylesheet" href="' . $baseUrl . '/assets/css/' . $currentRoute . '.css">';
     }
     ?>
+    <script src="<?php echo $baseUrl; ?>/assets/js/app.js" defer></script>
 </head>
 <body>
 <header class="site-header">
     <div class="container">
         <a href="<?php echo $baseUrl; ?>/index.php" class="logo">
-            <img src="/assets/images/MUPLogo.png" alt="MUPLogo.png" width="140" height="70">
+            <img src="/assets/images/MUPLogo.png" alt="MUPLogo.png" width="50" height="50">
             <span class="logo-text">MyUSAPassport</span>
         </a>
         <nav class="main-nav">
@@ -37,15 +38,31 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
             <a href="<?php echo $baseUrl; ?>/index.php?route=news">Новости</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=articles">Статьи</a>
             <?php if (Auth::check()): ?>
-                <a href="<?php echo $baseUrl; ?>/index.php?route=profile">Личный кабинет</a>
-                <a href="<?php echo $baseUrl; ?>/index.php?route=logout">Выход</a>
-                <?php
-                // показать пункт Админ только пользователю с ролью admin
-                $userModel = new User();
-                $currentUser = $userModel->findById(Auth::userId());
-                if ($currentUser && isset($currentUser['role']) && $currentUser['role'] === 'admin'): ?>
-                    <a href="<?php echo $baseUrl; ?>/index.php?route=admin">Админ</a>
-                <?php endif; ?>
+                <div class="user-menu">
+                    <?php
+                    $userModel = new User();
+                    $currentUser = $userModel->findByIdWithAvatar(Auth::userId());
+                    if ($currentUser):
+                    ?>
+                        <div class="user-avatar-nav">
+                            <?php if (!empty($currentUser['avatar'])): ?>
+                                <img src="/<?php echo htmlspecialchars($currentUser['avatar']); ?>" alt="Аватар">
+                            <?php else: ?>
+                                <div class="avatar-placeholder-nav">
+                                    <?php echo strtoupper(substr($currentUser['name'], 0, 1)); ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="user-dropdown">
+                            <a href="<?php echo $baseUrl; ?>/index.php?route=profile"><?php echo htmlspecialchars($currentUser['name']); ?></a>
+                            <?php if (isset($currentUser['role']) && $currentUser['role'] === 'admin'): ?>
+                                <a href="<?php echo $baseUrl; ?>/index.php?route=admin">Админ</a>
+                                <a href="<?php echo $baseUrl; ?>/index.php?route=admin/testimonials">Отзывы</a>
+                            <?php endif; ?>
+                            <a href="<?php echo $baseUrl; ?>/index.php?route=logout">Выход</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
             <?php else: ?>
                 <a href="<?php echo $baseUrl; ?>/index.php?route=login">Вход</a>
                 <a href="<?php echo $baseUrl; ?>/index.php?route=register">Регистрация</a>
@@ -66,8 +83,101 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
 
 <footer class="site-footer">
     <div class="container">
-        <p>USACitizenGuide &copy; <?php echo date('Y'); ?>. Учебный проект.</p>
+        <p>USACitizenGuide &copy; <?php echo date('Y'); ?>. Ваш помощник в получении гражданства США.</p>
     </div>
 </footer>
+
+<style>
+.user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-avatar-nav {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid #4a90e2;
+    transition: transform 0.2s;
+}
+
+.user-avatar-nav:hover {
+    transform: scale(1.1);
+}
+
+.user-avatar-nav img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder-nav {
+    width: 100%;
+    height: 100%;
+    background: #4a90e2;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.user-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    margin-top: 10px;
+}
+
+.user-menu:hover .user-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.user-dropdown a:hover {
+    background: #f8f9fa;
+}
+
+.user-dropdown a:first-child {
+    border-radius: 8px 8px 0 0;
+    font-weight: 500;
+}
+
+.user-dropdown a:last-child {
+    border-bottom: none;
+    border-radius: 0 0 8px 8px;
+    color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .user-dropdown {
+        right: -20px;
+    }
+}
+</style>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <h1>Статьи</h1>
 <p>Небольшие учебные материалы, которые можно дополнять и редактировать напрямую через базу данных.</p>
 <?php if (!empty($items)): ?>
-    <ul class="card-list">
+    <ul class="card-list card-list-single">
         <?php foreach ($items as $row): ?>
             <li class="card">
                 <?php if (!empty($row['image_url'])): ?>

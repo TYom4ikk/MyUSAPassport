@@ -1,8 +1,8 @@
 <h1>Вход</h1>
-<?php if (!empty($error)): ?>
-    <p style="color:red;"><?php echo htmlspecialchars($error); ?></p>
-<?php endif; ?>
-<form method="post" action="index.php?route=login">
+<p id="login-error" style="color:red;">
+    <?php echo !empty($error) ? htmlspecialchars($error) : ''; ?>
+</p>
+<form method="post" action="index.php?route=login" class="js-ajax" data-message-target="login-error">
     <label>Email:<br>
         <input type="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
     </label><br><br>

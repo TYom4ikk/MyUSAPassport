@@ -1,9 +1,10 @@
 <?php
+
 class HomeController extends Controller
 {
     public function index()
     {
-        $pageTitle = 'USACitizenGuide — помощник по получению гражданства США';
+        $pageTitle = 'Главная — MyUSAPassport';
         $viewFile = __DIR__ . '/../views/home/index.php';
         $this->view($viewFile, compact('pageTitle'));
     }
@@ -17,15 +18,23 @@ class HomeController extends Controller
 
     public function documents()
     {
-        $pageTitle = 'Необходимые документы';
+        $pageTitle = 'Документы для получения гражданства США';
         $viewFile = __DIR__ . '/../views/home/documents.php';
         $this->view($viewFile, compact('pageTitle'));
     }
 
     public function contact()
     {
-        $pageTitle = 'Форма обратной связи';
+        $pageTitle = 'Обратная связь';
         $viewFile = __DIR__ . '/../views/home/contact.php';
         $this->view($viewFile, compact('pageTitle'));
     }
+
+    public function naturalization()
+    {
+        $pageTitle = 'Натурализация — путь к гражданству США';
+        $viewFile = __DIR__ . '/../views/home/naturalization.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
 }
+
