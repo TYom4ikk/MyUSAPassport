@@ -62,10 +62,10 @@ $router->post('checklists/assignCase', 'ChecklistController@assignCase');
 $router->get('admin', 'AdminController@index');
 $router->post('admin/case/status', 'AdminController@updateCaseStatus');
 $router->post('admin/user/role', 'AdminController@updateUserRole');
-$router->post('admin/articles/create', 'AdminController@createArticle');
+$router->post('admin/article/create', 'AdminController@createArticle');
 $router->post('admin/news/create', 'AdminController@createNews');
 $router->post('admin/faq/create', 'AdminController@createFaq');
-$router->post('admin/articles/delete', 'AdminController@deleteArticle');
+$router->post('admin/article/delete', 'AdminController@deleteArticle');
 $router->post('admin/news/delete', 'AdminController@deleteNews');
 $router->post('admin/faq/delete', 'AdminController@deleteFaq');
 

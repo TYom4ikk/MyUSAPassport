@@ -22,40 +22,33 @@ class ContactController extends Controller
 
         if (!Auth::check()) {
             $info = 'Вы не авторизованы, поэтому не можете отправлять обратную связь.';
+        } elseif (!$rating) {
+            $info = 'Пожалуйста, укажите рейтинг для отправки отзыва.';
         } elseif ($message) {
             $model = new Inquiry();
             $userId = Auth::userId();
             
-            // Проверяем не отправлялся ли такой же отзыв недавно (защита от дублирования)
-            if ($rating) {
-                global $pdo;
-                $checkStmt = $pdo->prepare("
-                    SELECT COUNT(*) as count 
-                    FROM testimonials t 
-                    JOIN inquiries i ON t.inquiry_id = i.id 
-                    WHERE t.user_id = ? AND t.rating = ? AND t.content = ? AND t.created_at > DATE_SUB(NOW(), INTERVAL 1 MINUTE)
-                ");
-                $checkStmt->execute([$userId, $rating, $message]);
-                $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($result['count'] > 0) {
-                    $info = 'Такой отзыв был отправлен менее минуты назад. Пожалуйста, подождите.';
-                    $this->sendAjaxResponse($info);
-                    return;
-                }
-            }
+            // Проверяем на дубликаты только по последнему отзыву этого пользователя
+            global $pdo;
+            $checkStmt = $pdo->prepare("
+                SELECT COUNT(*) as count 
+                FROM testimonials t 
+                WHERE t.user_id = ? AND t.content = ? AND t.created_at > DATE_SUB(NOW(), INTERVAL 10 SECOND)
+            ");
+            $checkStmt->execute([$userId, $message]);
+            $result = $checkStmt->fetch(PDO::FETCH_ASSOC);
             
-            // Добавляем рейтинг в сообщение для сохранения в inquiries
-            $fullMessage = $message;
-            if ($rating) {
+            if ($result['count'] > 0) {
+                $info = 'Сообщение отправлено (сохранено в БД). Ваш отзыв отправлен на модерацию.';
+            } else {
+                // Добавляем рейтинг в сообщение для сохранения в inquiries
                 $fullMessage = "Рейтинг: {$rating}/5\n\n{$message}";
-            }
-            
-            if ($model->create($userId, $fullMessage)) {
-                $info = 'Сообщение отправлено (сохранено в БД).';
                 
-                // Если есть рейтинг, создаем отзыв автоматически
-                if ($rating) {
+                $inquiryCreated = $model->create($userId, $fullMessage);
+                if ($inquiryCreated) {
+                    $info = 'Сообщение отправлено (сохранено в БД).';
+                    
+                    // Создаем отзыв автоматически
                     $testimonialModel = new Testimonial();
                     $userModel = new User();
                     $user = $userModel->findById($userId);
@@ -77,18 +70,20 @@ class ContactController extends Controller
                     } else {
                         $info .= ' Ошибка при создании отзыва.';
                     }
+                } else {
+                    $info = 'Ошибка при отправке сообщения.';
                 }
-            } else {
-                $info = 'Ошибка при отправке сообщения.';
             }
         } else {
             $info = 'Введите сообщение.';
         }
 
-        // Отправляем только AJAX ответ
+        // Отправляем AJAX ответ
+        $success = !str_contains($info, 'Ошибка') && !str_contains($info, 'Введите');
+        
         header('Content-Type: application/json');
         echo json_encode([
-            'success' => true,
+            'success' => $success,
             'message' => $info,
         ]);
         exit;

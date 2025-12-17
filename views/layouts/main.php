@@ -35,6 +35,8 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
         </a>
         <nav class="main-nav">
             <a href="<?php echo $baseUrl; ?>/index.php?route=methods">Способы</a>
+            <a href="<?php echo $baseUrl; ?>/index.php?route=faq">FAQ</a>
+            <a href="<?php echo $baseUrl; ?>/index.php?route=case">Документы</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=news">Новости</a>
             <a href="<?php echo $baseUrl; ?>/index.php?route=articles">Статьи</a>
             <?php if (Auth::check()): ?>

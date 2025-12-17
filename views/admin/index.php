@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <li>
                         <?php echo htmlspecialchars($a['title']); ?>
                         <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
-                        <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                        <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;" data-target="admin-articles-list">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($a['id']); ?>">
                             <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
                         </form>
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <li>
                         <?php echo htmlspecialchars($n['title']); ?>
                         <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
-                        <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                        <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;" data-target="admin-news-list">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($n['id']); ?>">
                             <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
                         </form>
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 <?php foreach ($faq as $f): ?>
                     <li>
                         <strong><?php echo htmlspecialchars($f['question']); ?></strong>
-                        <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
+                        <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;" data-target="admin-faq-list">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($f['id']); ?>">
                             <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
                         </form>

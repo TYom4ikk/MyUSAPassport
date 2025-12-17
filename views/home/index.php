@@ -169,21 +169,17 @@
                                 <span><?php echo $testimonial['rating']; ?>/5</span>
                             </div>
                             <?php
-                            // Показываем статус отзыва
+                            // Показываем статус только для избранных отзывов
                             $statusClass = '';
                             $statusText = '';
-                            if ($testimonial['status'] === 'pending') {
-                                $statusClass = 'status-new';
-                                $statusText = 'Новый';
-                            } elseif ($testimonial['status'] === 'approved') {
-                                $statusClass = 'status-approved';
-                                $statusText = 'Одобрен';
-                            } elseif ($testimonial['status'] === 'featured') {
+                            if ($testimonial['status'] === 'featured') {
                                 $statusClass = 'status-featured';
                                 $statusText = 'Избранный';
                             }
                             ?>
-                            <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
+                            <?php if ($statusText): ?>
+                                <span class="status-badge <?php echo $statusClass; ?>"><?php echo $statusText; ?></span>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <div class="testimonial-content">

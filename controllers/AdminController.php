@@ -1,6 +1,13 @@
 <?php
 class AdminController extends Controller
 {
+    private function truncateText($text, $length = 30)
+    {
+        if (strlen($text) <= $length) {
+            return $text;
+        }
+        return substr($text, 0, $length) . '...';
+    }
     private function checkAdmin()
     {
         if (!Auth::check()) {
@@ -142,7 +149,7 @@ class AdminController extends Controller
                 <ul>
                     <?php foreach ($articles as $a): ?>
                         <li>
-                            <?php echo htmlspecialchars($a['title']); ?>
+                            <?php echo htmlspecialchars($this->truncateText($a['title'], 30)); ?>
                             <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
                             <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($a['id']); ?>">
@@ -205,7 +212,7 @@ class AdminController extends Controller
                 <ul>
                     <?php foreach ($news as $n): ?>
                         <li>
-                            <?php echo htmlspecialchars($n['title']); ?>
+                            <?php echo htmlspecialchars($this->truncateText($n['title'], 30)); ?>
                             <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
                             <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($n['id']); ?>">
@@ -252,7 +259,7 @@ class AdminController extends Controller
                 <ul>
                     <?php foreach ($faq as $f): ?>
                         <li>
-                            <strong><?php echo htmlspecialchars($f['question']); ?></strong>
+                            <strong><?php echo htmlspecialchars($this->truncateText($f['question'], 30)); ?></strong>
                             <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                                 <input type="hidden" name="id" value="<?php echo htmlspecialchars($f['id']); ?>">
                                 <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>
@@ -299,7 +306,7 @@ class AdminController extends Controller
             <ul>
                 <?php foreach ($articles as $a): ?>
                     <li>
-                        <?php echo htmlspecialchars($a['title']); ?>
+                        <?php echo htmlspecialchars($this->truncateText($a['title'], 30)); ?>
                         <small>(<?php echo htmlspecialchars($a['created_at']); ?>)</small>
                         <form method="post" action="index.php?route=admin/article/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($a['id']); ?>">
@@ -346,7 +353,7 @@ class AdminController extends Controller
             <ul>
                 <?php foreach ($news as $n): ?>
                     <li>
-                        <?php echo htmlspecialchars($n['title']); ?>
+                        <?php echo htmlspecialchars($this->truncateText($n['title'], 30)); ?>
                         <small>(<?php echo htmlspecialchars($n['created_at']); ?>)</small>
                         <form method="post" action="index.php?route=admin/news/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($n['id']); ?>">
@@ -393,7 +400,7 @@ class AdminController extends Controller
             <ul>
                 <?php foreach ($faq as $f): ?>
                     <li>
-                        <strong><?php echo htmlspecialchars($f['question']); ?></strong>
+                        <strong><?php echo htmlspecialchars($this->truncateText($f['question'], 30)); ?></strong>
                         <form method="post" action="index.php?route=admin/faq/delete" class="js-ajax-admin" style="display:inline-block; margin-left:8px;">
                             <input type="hidden" name="id" value="<?php echo htmlspecialchars($f['id']); ?>">
                             <button type="submit" class="btn btn-secondary" style="padding:2px 6px; font-size:11px;">Удалить</button>

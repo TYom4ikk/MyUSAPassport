@@ -11,7 +11,7 @@
                 <?php endif; ?>
                 <strong><?php echo htmlspecialchars($row['title']); ?></strong><br>
                 <small><?php echo htmlspecialchars($row['created_at']); ?></small><br>
-                <?php echo nl2br(htmlspecialchars(mb_substr($row['content'], 0, 200))); ?>...
+                <?php echo nl2br(htmlspecialchars($row['content'])); ?>
             </li>
         <?php endforeach; ?>
     </ul>

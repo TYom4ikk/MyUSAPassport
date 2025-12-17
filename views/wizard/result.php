@@ -1,17 +1,22 @@
 <h1>Результат анкеты</h1>
-<?php if ($result): ?>
-        <div class="card">
-            <h2>Предварительный вывод: вы можете подавать</h2>
-            <p>По введённым данным видно, что базовые условия (возраст, срок проживания, наличие грин-карты, отсутствие серьёзных судимостей и крупных налоговых проблем) формально выполняются.</p>
-            <p><strong>Важно:</strong> это только учебный пример, не юридическая консультация.</p>
+
+<div class="card">
+    <h2>Вероятность получения гражданства США</h2>
+    <div style="text-align: center; margin: 20px 0;">
+        <div style="font-size: 48px; font-weight: bold; color: <?php echo $result['probability'] >= 60 ? '#28a745' : '#dc3545'; ?>">
+            <?php echo $result['probability']; ?>%
         </div>
-<?php else: ?>
-        <div class="card">
-            <h2>Предварительный вывод: пока рано подавать</h2>
-            <p>Некоторые ключевые условия не выполняются (например, возраст, срок проживания, отсутствие грин-карты, серьёзные нарушения закона или большие налоговые долги).</p>
-            <p>Попробуйте доработать свою ситуацию и только потом думать о подаче. Это учебный помощник, а не официальный сервис.</p>
+        <div style="font-size: 18px; margin-top: 10px;">
+            <?php echo $result['score']; ?> из 100 баллов
         </div>
-<?php endif; ?>
+    </div>
+    
+    <div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+        <p style="font-size: 16px; margin: 0;">
+            <strong>Да я хз, дадут ли гражданство такому лоху как ты</strong>
+        </p>
+    </div>
+</div>
 
 <p><a href="index.php?route=wizard" class="btn btn-secondary">Пройти анкету ещё раз</a></p>
 <p><a href="index.php" class="btn">Вернуться на главную</a></p>

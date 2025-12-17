@@ -12,7 +12,7 @@ class WizardController extends Controller
     {
         $this->ensureSession();
         $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
-        if ($step < 1 || $step > 7) {
+        if ($step < 1 || $step > 10) {
             $step = 1;
         }
 
@@ -33,7 +33,7 @@ class WizardController extends Controller
             $_SESSION['wizard'][$key] = trim((string)$value);
         }
 
-        if ($step < 6) {
+        if ($step < 9) {
             $next = $step + 1;
             header('Location: index.php?route=wizard&step=' . $next);
             exit;
@@ -45,37 +45,73 @@ class WizardController extends Controller
 
         $model = new Wizard();
         $userId = Auth::userId();
-        $model->saveResult($userId, $data, $result ? 'eligible' : 'not_eligible');
+        $model->saveResult($userId, $data, $result['eligible'] ? 'eligible' : 'not_eligible');
 
         $pageTitle = 'Результат анкеты';
         $viewFile = __DIR__ . '/../views/wizard/result.php';
         $this->view($viewFile, compact('pageTitle', 'data', 'result'));
     }
 
-    private function calculateResult(array $data): bool
+    private function calculateResult(array $data): array
     {
-        // очень простой учебный пример логики
+        $score = 0;
+        $maxScore = 100;
+        
+        // Возраст (15 баллов)
         $age = isset($data['age']) ? (int)$data['age'] : 0;
-        $yearsInUsa = isset($data['years_in_usa']) ? (int)$data['years_in_usa'] : 0;
+        if ($age >= 18) {
+            $score += 15;
+        }
+        
+        // Green Card (25 баллов) - самый важный фактор
         $hasGreenCard = isset($data['status']) && $data['status'] === 'greencard';
+        if ($hasGreenCard) {
+            $score += 25;
+        }
+        
+        // Проживание в США (20 баллов)
+        $yearsInUsa = isset($data['years_in_usa']) ? (int)$data['years_in_usa'] : 0;
+        if ($yearsInUsa >= 5) {
+            $score += 20;
+        } elseif ($yearsInUsa >= 3) {
+            $score += 15;
+        } elseif ($yearsInUsa >= 1) {
+            $score += 10;
+        }
+        
+        // Отсутствие судимостей (15 баллов)
         $hasSeriousCrimes = isset($data['serious_crime']) && $data['serious_crime'] === 'yes';
+        if (!$hasSeriousCrimes) {
+            $score += 15;
+        }
+        
+        // Налоги (10 баллов)
         $taxProblems = isset($data['tax_debts']) && $data['tax_debts'] === 'yes';
-
-        if ($age < 18) {
-            return false;
+        $filesTaxes = isset($data['file_taxes']) && $data['file_taxes'] === 'yes';
+        if (!$taxProblems && $filesTaxes) {
+            $score += 10;
+        } elseif (!$taxProblems) {
+            $score += 5;
         }
-        if ($yearsInUsa < 3) {
-            return false;
+        
+        // Брак с гражданином США (бонус 10 баллов)
+        $marriedToCitizen = isset($data['married_to_citizen']) && $data['married_to_citizen'] === 'yes';
+        if ($marriedToCitizen && $yearsInUsa >= 3) {
+            $score += 10;
         }
-        if (!$hasGreenCard) {
-            return false;
+        
+        // Английский язык (5 баллов)
+        $englishLevel = isset($data['english_level']) ? $data['english_level'] : '';
+        if ($englishLevel === 'fluent' || $englishLevel === 'advanced') {
+            $score += 5;
         }
-        if ($hasSeriousCrimes) {
-            return false;
-        }
-        if ($taxProblems) {
-            return false;
-        }
-        return true;
+        
+        $probability = round(($score / $maxScore) * 100);
+        
+        return [
+            'score' => $score,
+            'probability' => $probability,
+            'eligible' => $probability >= 60
+        ];
     }
 }

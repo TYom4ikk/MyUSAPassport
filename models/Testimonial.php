@@ -10,18 +10,19 @@ class Testimonial {
     // Создать отзыв из inquiry
     public function createFromInquiry($inquiryId, $userId, $userName, $rating, $content) {
         $stmt = $this->pdo->prepare("
-            INSERT INTO testimonials (inquiry_id, user_id, user_name, rating, content) 
-            VALUES (?, ?, ?, ?, ?)
+            INSERT INTO testimonials (inquiry_id, user_id, user_name, rating, content, status) 
+            VALUES (?, ?, ?, ?, ?, 'pending')
         ");
         return $stmt->execute([$inquiryId, $userId, $userName, $rating, $content]);
     }
     
-    // Получить все отзывы для главной страницы (не только одобренные)
+    // Получить одобренные отзывы для главной страницы
     public function getAllForHomepage($limit = 20) {
         $stmt = $this->pdo->prepare("
             SELECT t.*, u.avatar, u.email
             FROM testimonials t
             LEFT JOIN users u ON t.user_id = u.id
+            WHERE t.status IN ('approved', 'featured')
             ORDER BY t.created_at DESC
             LIMIT " . (int)$limit
         );
