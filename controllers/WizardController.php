@@ -12,7 +12,7 @@ class WizardController extends Controller
     {
         $this->ensureSession();
         $step = isset($_GET['step']) ? (int)$_GET['step'] : 1;
-        if ($step < 1 || $step > 10) {
+        if ($step < 1 || $step > 6) {
             $step = 1;
         }
 
@@ -33,7 +33,7 @@ class WizardController extends Controller
             $_SESSION['wizard'][$key] = trim((string)$value);
         }
 
-        if ($step < 9) {
+        if ($step < 6) {
             $next = $step + 1;
             header('Location: index.php?route=wizard&step=' . $next);
             exit;
@@ -45,7 +45,7 @@ class WizardController extends Controller
 
         $model = new Wizard();
         $userId = Auth::userId();
-        $model->saveResult($userId, $data, $result['eligible'] ? 'eligible' : 'not_eligible');
+        $model->saveResult($userId, $data, $result['recommendations'][0]['title'] ?? 'Нет рекомендаций');
 
         $pageTitle = 'Результат анкеты';
         $viewFile = __DIR__ . '/../views/wizard/result.php';
@@ -54,64 +54,82 @@ class WizardController extends Controller
 
     private function calculateResult(array $data): array
     {
-        $score = 0;
-        $maxScore = 100;
+        $recommendations = [];
         
-        // Возраст (15 баллов)
-        $age = isset($data['age']) ? (int)$data['age'] : 0;
-        if ($age >= 18) {
-            $score += 15;
+        // 1. Проверяем натурализацию
+        if (isset($data['has_greencard']) && $data['has_greencard'] === 'yes') {
+            $recommendations[] = [
+                'method' => 'naturalization',
+                'title' => 'Натурализация',
+                'description' => 'У вас уже есть грин-карта, вы можете подавать на гражданство',
+                'priority' => 'high'
+            ];
         }
         
-        // Green Card (25 баллов) - самый важный фактор
-        $hasGreenCard = isset($data['status']) && $data['status'] === 'greencard';
-        if ($hasGreenCard) {
-            $score += 25;
+        // 2. Проверяем брак с гражданином США
+        if (isset($data['marital_status']) && $data['marital_status'] === 'married' &&
+            isset($data['spouse_us_citizen']) && $data['spouse_us_citizen'] === 'yes') {
+            $recommendations[] = [
+                'method' => 'marriage',
+                'title' => 'Брак с гражданином США',
+                'description' => 'Брак с гражданином США - прямой путь к гражданству',
+                'priority' => 'high'
+            ];
         }
         
-        // Проживание в США (20 баллов)
-        $yearsInUsa = isset($data['years_in_usa']) ? (int)$data['years_in_usa'] : 0;
-        if ($yearsInUsa >= 5) {
-            $score += 20;
-        } elseif ($yearsInUsa >= 3) {
-            $score += 15;
-        } elseif ($yearsInUsa >= 1) {
-            $score += 10;
+        // 3. Проверяем инвестиции
+        if (isset($data['can_invest']) && $data['can_invest'] === 'yes') {
+            $recommendations[] = [
+                'method' => 'investment',
+                'title' => 'Инвестиции (EB-5)',
+                'description' => 'Инвестиционная программа EB-5 для получения грин-карты',
+                'priority' => 'medium'
+            ];
         }
         
-        // Отсутствие судимостей (15 баллов)
-        $hasSeriousCrimes = isset($data['serious_crime']) && $data['serious_crime'] === 'yes';
-        if (!$hasSeriousCrimes) {
-            $score += 15;
+        // 4. Проверяем военную службу
+        if (isset($data['military_ready']) && $data['military_ready'] === 'yes' &&
+            isset($data['age']) && in_array($data['age'], ['18-25', '26-35'])) {
+            $recommendations[] = [
+                'method' => 'military',
+                'title' => 'Служба в армии США',
+                'description' => 'Военная служба предоставляет ускоренный путь к гражданству',
+                'priority' => 'medium'
+            ];
         }
         
-        // Налоги (10 баллов)
-        $taxProblems = isset($data['tax_debts']) && $data['tax_debts'] === 'yes';
-        $filesTaxes = isset($data['file_taxes']) && $data['file_taxes'] === 'yes';
-        if (!$taxProblems && $filesTaxes) {
-            $score += 10;
-        } elseif (!$taxProblems) {
-            $score += 5;
+        // 5. Проверяем рабочую миграцию
+        if ((isset($data['has_education']) && $data['has_education'] === 'yes') ||
+            (isset($data['has_specialty']) && $data['has_specialty'] === 'yes') ||
+            (isset($data['job_offer']) && $data['job_offer'] === 'yes')) {
+            $recommendations[] = [
+                'method' => 'employment',
+                'title' => 'Рабочая миграция',
+                'description' => 'Получение грин-карты через работу или востребованную специальность',
+                'priority' => 'medium'
+            ];
         }
         
-        // Брак с гражданином США (бонус 10 баллов)
-        $marriedToCitizen = isset($data['married_to_citizen']) && $data['married_to_citizen'] === 'yes';
-        if ($marriedToCitizen && $yearsInUsa >= 3) {
-            $score += 10;
+        // 6. Проверяем лотерею Green Card (для всех, кто не подходит под другие варианты)
+        if (empty($recommendations) || 
+            (isset($data['current_location']) && $data['current_location'] === 'outside_usa')) {
+            $recommendations[] = [
+                'method' => 'greencard',
+                'title' => 'Лотерея Green Card',
+                'description' => 'Ежегодная лотерея грин-карт - шанс на иммиграцию',
+                'priority' => 'low'
+            ];
         }
         
-        // Английский язык (5 баллов)
-        $englishLevel = isset($data['english_level']) ? $data['english_level'] : '';
-        if ($englishLevel === 'fluent' || $englishLevel === 'advanced') {
-            $score += 5;
-        }
-        
-        $probability = round(($score / $maxScore) * 100);
+        // Сортируем по приоритету
+        usort($recommendations, function($a, $b) {
+            $priority = ['high' => 3, 'medium' => 2, 'low' => 1];
+            return $priority[$b['priority']] - $priority[$a['priority']];
+        });
         
         return [
-            'score' => $score,
-            'probability' => $probability,
-            'eligible' => $probability >= 60
+            'recommendations' => $recommendations,
+            'total_methods' => count($recommendations)
         ];
     }
 }

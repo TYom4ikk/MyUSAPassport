@@ -19,86 +19,70 @@ class ChecklistController extends Controller
     public function save()
     {
         if (!Auth::check()) {
-            header('Location: index.php?route=login');
+            http_response_code(401);
             exit;
         }
-        $title = $_POST['title'] ?? '';
-        $steps = $_POST['steps'] ?? '';
-        $caseId = !empty($_POST['case_id']) ? (int)$_POST['case_id'] : null;
-
-        if ($title && $steps) {
-            $model = new Checklist();
-            $model->saveForUser(Auth::userId(), $title, $steps, $caseId);
+        
+        $title = trim($_POST['title'] ?? '');
+        $steps = trim($_POST['steps'] ?? '');
+        $caseId = (int)($_POST['case_id'] ?? 0);
+        
+        if (empty($title) || empty($steps) || empty($caseId)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Заполните все поля и выберите кейс']);
+            exit;
         }
-        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
-
-        if ($isAjax) {
-            $checklistModel = new Checklist();
-            $checklists = $checklistModel->userChecklists(Auth::userId());
-            $cases = $checklistModel->getUserCases(Auth::userId());
-
+        
+        $model = new Checklist();
+        $checklistId = $model->saveForUser(Auth::userId(), $title, $steps, $caseId);
+        
+        if ($checklistId) {
+            // Возвращаем HTML для нового чек-листа
+            $checklist = $model->getById($checklistId);
             ob_start();
             ?>
-            <?php if (!empty($checklists)): ?>
-                <div class="checklists-container">
-                    <?php foreach ($checklists as $c): ?>
-                        <div class="checklist-card" data-checklist-id="<?php echo $c['id']; ?>">
-                            <div class="checklist-header">
-                                <h3><?php echo htmlspecialchars($c['title']); ?></h3>
-                                <?php if ($c['case_id']): ?>
-                                    <span class="case-badge">
-                                        Кейс #<?php echo $c['case_id']; ?> 
-                                        (<?php echo htmlspecialchars($c['case_status']); ?>)
-                                    </span>
-                                <?php endif; ?>
-                            </div>
-                            
-                            <div class="checklist-steps">
-                                <?php 
-                                $steps = explode("\n", trim($c['steps']));
-                                foreach ($steps as $index => $step): 
-                                    if (!empty(trim($step))):
-                                ?>
-                                    <div class="checklist-step">
-                                        <input type="checkbox" 
-                                               id="step_<?php echo $c['id']; ?>_<?php echo $index; ?>" 
-                                               name="step_<?php echo $c['id']; ?>_<?php echo $index; ?>"
-                                               onchange="updateStepStatus(<?php echo $c['id']; ?>, <?php echo $index; ?>, this.checked)">
-                                        <label for="step_<?php echo $c['id']; ?>_<?php echo $index; ?>">
-                                            <?php echo htmlspecialchars(trim($step)); ?>
-                                        </label>
-                                    </div>
-                                <?php 
-                                    endif;
-                                endforeach; 
-                                ?>
-                            </div>
-                            
-                            <div class="checklist-footer">
-                                <small>Создан: <?php echo htmlspecialchars($c['created_at']); ?></small>
-                                <?php if (!$c['case_id']): ?>
-                                    <button onclick="assignToCase(<?php echo $c['id']; ?>)" class="btn-small">Привязать к кейсу</button>
-                                <?php endif; ?>
-                            </div>
+            <div class="card" style="margin-bottom: 10px; padding: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex: 1;">
+                        <h5><?php echo htmlspecialchars($checklist['title']); ?></h5>
+                        <div class="checklist-steps">
+                            <?php 
+                            $stepLines = explode("\n", trim($checklist['steps']));
+                            foreach ($stepLines as $index => $step): 
+                                if (!empty(trim($step))):
+                            ?>
+                                <div class="checklist-step">
+                                    <input type="checkbox" id="step_<?php echo $checklist['id'] . '_' . $index; ?>" 
+                                           data-checklist-id="<?php echo $checklist['id']; ?>" 
+                                           data-step-index="<?php echo $index; ?>">
+                                    <label for="step_<?php echo $checklist['id'] . '_' . $index; ?>">
+                                        <?php echo htmlspecialchars(trim($step)); ?>
+                                    </label>
+                                </div>
+                            <?php endif; endforeach; ?>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+                    <form method="post" action="index.php?route=checklists/delete" style="margin-left: 10px;">
+                        <input type="hidden" name="checklist_id" value="<?php echo $checklist['id']; ?>">
+                        <input type="hidden" name="case_id" value="<?php echo $caseId; ?>">
+                        <button type="submit" class="btn btn-small" style="background: #dc3545; color: white;" onclick="return confirm('Удалить чек-лист?')">Удалить</button>
+                    </form>
                 </div>
-            <?php else: ?>
-                <p>У вас ещё нет чек-листов.</p>
-            <?php endif; ?>
+            </div>
             <?php
             $html = ob_get_clean();
+            
             header('Content-Type: application/json');
             echo json_encode([
-                'success'  => true,
+                'success' => true,
                 'targetId' => 'checklists-list',
-                'html'     => $html,
+                'html' => $html,
+                'message' => 'Чек-лист создан'
             ]);
-            exit;
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Ошибка при создании чек-листа']);
         }
-
-        header('Location: index.php?route=checklists');
         exit;
     }
     
@@ -123,24 +107,29 @@ class ChecklistController extends Controller
         exit;
     }
     
-    public function assignCase()
+    public function delete()
     {
         if (!Auth::check()) {
-            http_response_code(401);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Требуется авторизация']);
             exit;
         }
         
-        $data = json_decode(file_get_contents('php://input'), true);
-        $checklistId = $data['checklist_id'] ?? null;
-        $caseId = $data['case_id'] ?? null;
+        $checklistId = (int)($_POST['checklist_id'] ?? 0);
+        $userId = Auth::userId();
         
-        if ($checklistId && $caseId) {
-            $model = new Checklist();
-            $model->updateCaseId($checklistId, $caseId);
+        $checklistModel = new Checklist();
+        
+        if ($checklistModel->delete($checklistId, $userId)) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Чек-лист удален'
+            ]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Ошибка при удалении чек-листа']);
         }
-        
-        header('Content-Type: application/json');
-        echo json_encode(['success' => true]);
         exit;
     }
 }

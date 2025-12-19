@@ -71,15 +71,9 @@
 
 <div class="profile-grid">
     <div class="card">
-        <h2>Мои чек-листы</h2>
-        <p>Храните свои чек-листы по подготовке к гражданству.</p>
-        <p><a href="index.php?route=checklists" class="btn btn-secondary">Перейти к чек-листам</a></p>
-    </div>
-
-    <div class="card">
-        <h2>Мой кейс</h2>
-        <p>Просматривайте статус кейса и загруженные документы.</p>
-        <p><a href="index.php?route=case" class="btn btn-secondary">Перейти к кейсу и документам</a></p>
+        <h2>Мои кейсы</h2>
+        <p>Управляйте своими миграционными кейсами для разных способов получения гражданства.</p>
+        <p><a href="index.php?route=case" class="btn btn-secondary">Перейти к кейсам</a></p>
     </div>
 
     <div class="card">

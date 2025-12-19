@@ -1,5 +1,5 @@
 <h1>Мои чек-листы</h1>
-<p>Здесь можно хранить свои учебные или тестовые чек-листы по подготовке к получению гражданства.</p>
+<p>Создавайте чек-листы для конкретных кейсов. Каждый чек-лист должен быть привязан к кейсу.</p>
 
 <form method="post" action="index.php?route=checklists/save" class="js-ajax" data-target="checklists-list">
     <label>Название чек-листа:<br>
@@ -7,12 +7,21 @@
     </label><br><br>
     
     <label>Способ получения гражданства (кейс):<br>
-        <select name="case_id">
-            <option value="">-- Выберите кейс (необязательно) --</option>
+        <select name="case_id" required>
+            <option value="">-- Выберите кейс --</option>
             <?php if (!empty($cases)): ?>
                 <?php foreach ($cases as $case): ?>
                     <option value="<?php echo $case['id']; ?>">
-                        Кейс #<?php echo $case['id']; ?> - <?php echo htmlspecialchars($case['status']); ?>
+                        <?php echo htmlspecialchars($case['title']); ?> 
+                        (<?php 
+                        echo match($case['status']) {
+                            'active' => 'Активен',
+                            'completed' => 'Завершен',
+                            'paused' => 'Приостановлен',
+                            'cancelled' => 'Отменен',
+                            default => $case['status']
+                        }; 
+                        ?>)
                     </option>
                 <?php endforeach; ?>
             <?php endif; ?>
@@ -35,9 +44,17 @@
                     <div class="checklist-header">
                         <h3><?php echo htmlspecialchars($c['title']); ?></h3>
                         <?php if ($c['case_id']): ?>
-                            <span class="case-badge">
-                                Кейс #<?php echo $c['case_id']; ?> 
-                                (<?php echo htmlspecialchars($c['case_status']); ?>)
+                            <span class="case-badge" style="background: #e3f2fd; color: #1565c0; padding: 2px 6px; border-radius: 3px; font-size: 11px;">
+                                <?php echo htmlspecialchars($c['case_title']); ?>
+                                (<?php 
+                                echo match($c['case_status']) {
+                                    'active' => 'Активен',
+                                    'completed' => 'Завершен',
+                                    'paused' => 'Приостановлен',
+                                    'cancelled' => 'Отменен',
+                                    default => $c['case_status']
+                                }; 
+                                ?>)
                             </span>
                         <?php endif; ?>
                     </div>
@@ -65,9 +82,10 @@
                     
                     <div class="checklist-footer">
                         <small>Создан: <?php echo htmlspecialchars($c['created_at']); ?></small>
-                        <?php if (!$c['case_id']): ?>
-                            <button onclick="assignToCase(<?php echo $c['id']; ?>)" class="btn-small">Привязать к кейсу</button>
-                        <?php endif; ?>
+                        <form method="post" action="index.php?route=checklists/delete" class="js-ajax-admin" style="display: inline; margin-left: 10px;">
+                            <input type="hidden" name="checklist_id" value="<?php echo $c['id']; ?>">
+                            <button type="submit" class="btn btn-small" style="background: #dc3545; color: white;" onclick="return confirm('Удалить чек-лист?')">Удалить</button>
+                        </form>
                     </div>
                 </div>
             <?php endforeach; ?>

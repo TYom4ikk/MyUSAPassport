@@ -30,6 +30,18 @@ class User
         return $stmt->execute([$name, $email, $hash]);
     }
 
+    public function delete(int $userId): bool
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM users WHERE id = ?');
+        return $stmt->execute([$userId]);
+    }
+    
+    public function all(): array
+    {
+        $stmt = $this->pdo->query('SELECT * FROM users ORDER BY created_at DESC');
+        return $stmt->fetchAll();
+    }
+    
     public function updateProfile($userId, $data) {
         $sql = "UPDATE users SET name = :name, email = :email";
         $params = [

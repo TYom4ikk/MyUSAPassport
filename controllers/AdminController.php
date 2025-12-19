@@ -26,6 +26,84 @@ class AdminController extends Controller
         return $user;
     }
 
+    public function documents()
+    {
+        $this->checkAdmin();
+        
+        $docModel = new CaseDocument();
+        $pendingDocuments = $docModel->getAllPending();
+        
+        $pageTitle = 'Модерация документов';
+        $viewFile = __DIR__ . '/../views/admin/documents.php';
+        $this->view($viewFile, compact('pageTitle', 'pendingDocuments'));
+    }
+    
+    public function updateDocumentStatus()
+    {
+        $this->checkAdmin();
+        
+        $documentId = (int)($_POST['document_id'] ?? 0);
+        $status = trim($_POST['status'] ?? '');
+        $adminComment = trim($_POST['admin_comment'] ?? '');
+        
+        if (!in_array($status, ['approved', 'rejected'])) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Неверный статус']);
+            exit;
+        }
+        
+        $docModel = new CaseDocument();
+        if ($docModel->updateStatus($documentId, $status, $adminComment)) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Статус документа обновлен'
+            ]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Ошибка при обновлении статуса']);
+        }
+        exit;
+    }
+
+    public function users()
+    {
+        $this->checkAdmin();
+        
+        $userModel = new User();
+        $users = $userModel->all();
+        
+        $pageTitle = 'Управление пользователями';
+        $viewFile = __DIR__ . '/../views/admin/users.php';
+        $this->view($viewFile, compact('pageTitle', 'users'));
+    }
+    
+    public function deleteUser()
+    {
+        $this->checkAdmin();
+        
+        $userId = (int)($_POST['user_id'] ?? 0);
+        
+        if ($userId === Auth::userId()) {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Нельзя удалить самого себя']);
+            exit;
+        }
+        
+        $userModel = new User();
+        if ($userModel->delete($userId)) {
+            header('Content-Type: application/json');
+            echo json_encode([
+                'success' => true,
+                'message' => 'Пользователь удален'
+            ]);
+        } else {
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Ошибка при удалении пользователя']);
+        }
+        exit;
+    }
+
     public function index()
     {
         $admin = $this->checkAdmin();

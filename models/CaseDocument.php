@@ -22,6 +22,37 @@ class CaseDocument
         return $stmt->execute([$caseId, $stage, $title, $filePath, 'pending']);
     }
     
+    public function delete(int $documentId, int $userId): bool
+    {
+        $stmt = $this->pdo->prepare('
+            DELETE cd FROM case_documents cd 
+            JOIN migration_cases mc ON cd.case_id = mc.id 
+            WHERE cd.id = ? AND mc.user_id = ?
+        ');
+        return $stmt->execute([$documentId, $userId]);
+    }
+    
+    public function getById(int $documentId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM case_documents WHERE id = ?');
+        $stmt->execute([$documentId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+    
+    public function canUserDelete(int $documentId, int $userId): bool
+    {
+        $stmt = $this->pdo->prepare('
+            SELECT COUNT(*) as count 
+            FROM case_documents cd 
+            JOIN migration_cases mc ON cd.case_id = mc.id 
+            WHERE cd.id = ? AND mc.user_id = ? AND cd.status IN ("pending", "rejected")
+        ');
+        $stmt->execute([$documentId, $userId]);
+        $result = $stmt->fetch();
+        return $result['count'] > 0;
+    }
+    
     public function updateStatus(int $documentId, string $status, string $adminComment = null): bool
     {
         $stmt = $this->pdo->prepare('UPDATE case_documents SET status = ?, admin_comment = ? WHERE id = ?');
@@ -31,14 +62,26 @@ class CaseDocument
     public function getAllPending()
     {
         $stmt = $this->pdo->prepare('
-            SELECT cd.*, c.user_id, u.name as user_name, u.email 
+            SELECT cd.*, mc.user_id, u.name as user_name, u.email 
             FROM case_documents cd 
-            JOIN cases c ON cd.case_id = c.id 
-            JOIN users u ON c.user_id = u.id 
+            JOIN migration_cases mc ON cd.case_id = mc.id 
+            JOIN users u ON mc.user_id = u.id 
             WHERE cd.status = "pending" 
             ORDER BY cd.uploaded_at ASC
         ');
         $stmt->execute();
         return $stmt->fetchAll();
+    }
+    
+    public function getStatusTitle(string $status): string
+    {
+        $statuses = [
+            'pending' => 'На проверке',
+            'under_review' => 'На проверке',
+            'approved' => 'Одобрено',
+            'rejected' => 'Отклонено'
+        ];
+        
+        return $statuses[$status] ?? $status;
     }
 }

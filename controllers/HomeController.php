@@ -36,5 +36,40 @@ class HomeController extends Controller
         $viewFile = __DIR__ . '/../views/home/naturalization.php';
         $this->view($viewFile, compact('pageTitle'));
     }
+
+    public function greencard()
+    {
+        $pageTitle = 'Лотерея Green Card';
+        $viewFile = __DIR__ . '/../views/home/greencard.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
+
+    public function marriage()
+    {
+        $pageTitle = 'Брак с гражданином США';
+        $viewFile = __DIR__ . '/../views/home/marriage.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
+
+    public function investment()
+    {
+        $pageTitle = 'Инвестиции (EB-5)';
+        $viewFile = __DIR__ . '/../views/home/investment.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
+
+    public function military()
+    {
+        $pageTitle = 'Служба в армии США';
+        $viewFile = __DIR__ . '/../views/home/military.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
+
+    public function employment()
+    {
+        $pageTitle = 'Рабочая миграция';
+        $viewFile = __DIR__ . '/../views/home/employment.php';
+        $this->view($viewFile, compact('pageTitle'));
+    }
 }
 

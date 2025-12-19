@@ -5,7 +5,7 @@
     <p><?php echo htmlspecialchars($error); ?></p>
 <?php endif; ?>
 
-<form method="post" action="index.php?route=reset">
+<form method="post" action="index.php?route=reset" class="js-ajax" data-message-target="reset-error">
     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
     <label>Новый пароль:
         <input type="password" name="password">

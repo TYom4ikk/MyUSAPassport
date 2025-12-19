@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Предотвращаем вывод JSON на экран
+    var originalWrite = document.write;
+    document.write = function(content) {
+        if (content.startsWith('{') && content.includes('success')) {
+            return; // Не выводим JSON-ответы
+        }
+        return originalWrite.call(document, content);
+    };
+
     function isAjaxSupported() {
         return window.fetch && window.FormData;
     }
@@ -19,6 +28,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         }).then(function (resp) {
+            // Проверяем, что это AJAX-запрос
+            if (!resp.headers.get('Content-Type') || !resp.headers.get('Content-Type').includes('application/json')) {
+                // Если не JSON, просто показываем ответ
+                return resp.text().then(function(text) {
+                    // Не выводим JSON на экран
+                    if (text.startsWith('{')) {
+                        return JSON.parse(text);
+                    }
+                    return {success: false, error: 'Invalid response'};
+                });
+            }
             return resp.json();
         }).then(function (data) {
             if (data && data.success) {
@@ -29,6 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }).catch(function (err) {
             if (onError) onError({success: false, error: err});
         });
+    }
 
     // Универсальные формы с классом .js-ajax
     document.querySelectorAll('form.js-ajax').forEach(function (form) {
@@ -62,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         });
     });
-    }
 
     // Админские формы с классом .js-ajax-admin - используем делегирование событий
     document.addEventListener('submit', function(e) {
@@ -97,6 +117,52 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (target) {
                     target.innerHTML = data.html;
                     console.log('Content updated for:', targetId); // Отладка
+                }
+            }
+            
+            // Для форм удаления - удаляем элемент со страницы
+            if (isDeleteForm && data.success) {
+                var userRow = form.closest('tr');
+                if (userRow) {
+                    userRow.remove();
+                    console.log('User row removed from table');
+                }
+                
+                // Также обрабатываем удаление кейсов (карточки)
+                var caseCard = form.closest('.card');
+                if (caseCard) {
+                    caseCard.remove();
+                    console.log('Case card removed from page');
+                }
+                
+                // Обрабатываем удаление чек-листов
+                var checklistCard = form.closest('.checklist-card');
+                if (checklistCard) {
+                    checklistCard.remove();
+                    console.log('Checklist card removed from page');
+                }
+                
+                // Обрабатываем удаление чек-листов в view кейса
+                var checklistDiv = form.closest('.card');
+                if (checklistDiv && !caseCard) {
+                    checklistDiv.remove();
+                    console.log('Checklist div removed from case view');
+                }
+                
+                // Обрабатываем удаление документов
+                var documentLi = form.closest('li');
+                if (documentLi) {
+                    documentLi.remove();
+                    console.log('Document li removed from page');
+                }
+            }
+            
+            // Для форм модерации документов - обновляем статус
+            if (!isDeleteForm && data.success && action.includes('updateDocumentStatus')) {
+                var documentRow = form.closest('tr');
+                if (documentRow) {
+                    // Перезагружаем страницу для обновления статусов
+                    window.location.reload();
                 }
             }
             

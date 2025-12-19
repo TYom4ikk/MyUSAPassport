@@ -1,112 +1,22 @@
 <h1>Админ-панель</h1>
 <p>Вы вошли как администратор.</p>
 
-<h2>Кейсы пользователей</h2>
-<p>Здесь можно менять статус кейса. Пользователь увидит его на странице "Мой кейс и документы".</p>
-
-<?php if (!empty($cases)): ?>
-    <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span style="font-size:13px; color:#4b5563;">Список кейсов.</span>
-            <button type="button" class="btn btn-secondary admin-toggle" data-target="admin-cases-table">Свернуть / развернуть</button>
-        </div>
-        <div id="admin-cases-table" class="admin-scroll">
-        <table style="width:100%; font-size: 13px; border-collapse: collapse;">
-            <tr>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">ID</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Пользователь</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Email</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Статус</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Изменить</th>
-            </tr>
-            <?php foreach ($cases as $c): ?>
-                <tr>
-                    <td style="padding:4px;">#<?php echo htmlspecialchars($c['id']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($c['user_name']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($c['user_email']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($c['status']); ?></td>
-                    <td style="padding:4px; ">
-                        <form method="post" action="index.php?route=admin/case/status" class="js-ajax-admin">
-                            <input type="hidden" name="case_id" value="<?php echo htmlspecialchars($c['id']); ?>">
-                            <select name="status" style="font-size: 12px;">
-                                <option value="Not started" <?php echo $c['status']==='Not started' ? 'selected' : ''; ?>>Not started</option>
-                                <option value="Collecting documents" <?php echo $c['status']==='Collecting documents' ? 'selected' : ''; ?>>Collecting documents</option>
-                                <option value="Ready to file" <?php echo $c['status']==='Ready to file' ? 'selected' : ''; ?>>Ready to file</option>
-                                <option value="Filed" <?php echo $c['status']==='Filed' ? 'selected' : ''; ?>>Filed</option>
-                                <option value="Biometrics scheduled" <?php echo $c['status']==='Biometrics scheduled' ? 'selected' : ''; ?>>Biometrics scheduled</option>
-                                <option value="Interview" <?php echo $c['status']==='Interview' ? 'selected' : ''; ?>>Interview</option>
-                                <option value="Oath" <?php echo $c['status']==='Oath' ? 'selected' : ''; ?>>Oath</option>
-                                <option value="Done" <?php echo $c['status']==='Done' ? 'selected' : ''; ?>>Done</option>
-                            </select>
-                            <button type="submit" class="btn" style="padding:4px 10px; margin-left:4px;">Сохранить</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-        </div>
-    <script>
-document.addEventListener('DOMContentLoaded', function () {
-    var toggles = document.querySelectorAll('.admin-toggle');
-    toggles.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-            var targetId = btn.getAttribute('data-target');
-            var el = document.getElementById(targetId);
-            if (!el) return;
-            if (el.style.display === 'none') {
-                el.style.display = '';
-            } else {
-                el.style.display = 'none';
-            }
-        });
-    });
-});
-</script>
+<div class="admin-nav">
+    <a href="index.php?route=admin/users" class="btn btn-secondary">Управление пользователями</a>
+    <a href="index.php?route=admin/documents" class="btn btn-secondary">Модерация документов</a>
 </div>
-<?php else: ?>
-    <p>Кейсов пока нет.</p>
+
+<?php if (isset($_SESSION['success'])): ?>
+    <div class="card" style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724;">
+        <?php echo htmlspecialchars($_SESSION['success']); unset($_SESSION['success']); ?>
+    </div>
 <?php endif; ?>
 
-<h2>Пользователи</h2>
-<div class="card" style="margin-top:8px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-        <p style="margin:0; font-size:13px; color:#4b5563;">Список зарегистрированных пользователей.</p>
-        <button type="button" class="btn btn-secondary admin-toggle" data-target="admin-users-table">Свернуть / развернуть</button>
+<?php if (isset($_SESSION['error'])): ?>
+    <div class="card" style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24;">
+        <?php echo htmlspecialchars($_SESSION['error']); unset($_SESSION['error']); ?>
     </div>
-    <?php if (!empty($users)): ?>
-        <div id="admin-users-table" class="admin-scroll">
-        <table style="width:100%; font-size: 13px; border-collapse: collapse;">
-            <tr>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">ID</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Имя</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Email</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Роль</th>
-                <th style="text-align:left; border-bottom:1px solid rgba(255,255,255,0.2); padding:4px;">Смена роли</th>
-            </tr>
-            <?php foreach ($users as $u): ?>
-                <tr>
-                    <td style="padding:4px;">#<?php echo htmlspecialchars($u['id']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($u['name']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($u['email']); ?></td>
-                    <td style="padding:4px; "><?php echo htmlspecialchars($u['role']); ?></td>
-                    <td style="padding:4px; ">
-                        <form method="post" action="index.php?route=admin/user/role" class="js-ajax-admin">
-                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($u['id']); ?>">
-                            <select name="role" style="font-size:12px;">
-                                <option value="user" <?php echo $u['role']==='user' ? 'selected' : ''; ?>>user</option>
-                                <option value="admin" <?php echo $u['role']==='admin' ? 'selected' : ''; ?>>admin</option>
-                            </select>
-                            <button type="submit" class="btn" style="padding:4px 10px; margin-left:4px;">OK</button>
-                        </form>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
-        </div>
-    <?php else: ?>
-        <p>Пользователей пока нет.</p>
-    <?php endif; ?>
-</div>
+<?php endif; ?>
 
 <h2>Статьи</h2>
 <div class="card" style="margin-top:8px;">

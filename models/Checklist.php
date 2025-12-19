@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/Case.php';
+
 class Checklist
 {
     private PDO $pdo;
@@ -12,9 +14,9 @@ class Checklist
     public function userChecklists(int $userId)
     {
         $stmt = $this->pdo->prepare('
-            SELECT c.*, ca.id as case_id, ca.status as case_status 
+            SELECT c.*, mc.id as case_id, mc.title as case_title, mc.method as case_method, mc.status as case_status 
             FROM checklists c 
-            LEFT JOIN cases ca ON c.case_id = ca.id 
+            LEFT JOIN migration_cases mc ON c.case_id = mc.id 
             WHERE c.user_id = ? 
             ORDER BY c.created_at DESC
         ');
@@ -34,10 +36,28 @@ class Checklist
         return $stmt->execute([$caseId, $checklistId]);
     }
     
+    public function delete(int $checklistId, int $userId): bool
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM checklists WHERE id = ? AND user_id = ?');
+        return $stmt->execute([$checklistId, $userId]);
+    }
+    
+    public function getByCaseId(int $caseId): array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM checklists WHERE case_id = ? ORDER BY created_at DESC');
+        $stmt->execute([$caseId]);
+        return $stmt->fetchAll();
+    }
+    
     public function getUserCases(int $userId)
     {
-        $stmt = $this->pdo->prepare('SELECT * FROM cases WHERE user_id = ? ORDER BY created_at DESC');
+        $stmt = $this->pdo->prepare('SELECT * FROM migration_cases WHERE user_id = ? ORDER BY created_at DESC');
         $stmt->execute([$userId]);
         return $stmt->fetchAll();
+    }
+    
+    public function getMethodTitle(string $method): string
+    {
+        return MigrationCase::getMethodTitle($method);
     }
 }

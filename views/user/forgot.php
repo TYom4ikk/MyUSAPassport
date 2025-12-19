@@ -5,7 +5,7 @@
     <p><?php echo htmlspecialchars($info); ?></p>
 <?php endif; ?>
 
-<form method="post" action="index.php?route=forgot">
+<form method="post" action="index.php?route=forgot" class="js-ajax" data-message-target="forgot-error">
     <label>Email:
         <input type="email" name="email" value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>">
     </label>

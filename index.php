@@ -26,6 +26,11 @@ $router->get('', 'HomeController@index');
 $router->get('home', 'HomeController@index');
 $router->get('methods', 'HomeController@methods');
 $router->get('methods/naturalization', 'HomeController@naturalization');
+$router->get('methods/greencard', 'HomeController@greencard');
+$router->get('methods/marriage', 'HomeController@marriage');
+$router->get('methods/investment', 'HomeController@investment');
+$router->get('methods/military', 'HomeController@military');
+$router->get('methods/employment', 'HomeController@employment');
 $router->get('documents', 'HomeController@documents');
 $router->get('contact', 'HomeController@contact');
 $router->post('contact', 'ContactController@send');
@@ -48,18 +53,29 @@ $router->post('forgot', 'UserController@forgotPost');
 $router->get('reset', 'UserController@reset');
 $router->post('reset', 'UserController@resetPost');
 
-// кейс пользователя (документы)
+// кейсы пользователей
 $router->get('case', 'CaseController@index');
+$router->get('case/create', 'CaseController@create');
+$router->post('case/create', 'CaseController@create');
+$router->get('case/view', 'CaseController@viewCase');
+$router->get('case/edit', 'CaseController@edit');
+$router->post('case/edit', 'CaseController@edit');
+$router->post('case/delete', 'CaseController@delete');
 $router->post('case/upload', 'CaseController@upload');
+$router->post('case/deleteDocument', 'CaseController@deleteDocument');
 
 // чек-листы
 $router->get('checklists', 'ChecklistController@index');
 $router->post('checklists/save', 'ChecklistController@save');
 $router->post('checklists/updateStep', 'ChecklistController@updateStep');
-$router->post('checklists/assignCase', 'ChecklistController@assignCase');
+$router->post('checklists/delete', 'ChecklistController@delete');
 
 // админ-панель
 $router->get('admin', 'AdminController@index');
+$router->get('admin/users', 'AdminController@users');
+$router->post('admin/deleteUser', 'AdminController@deleteUser');
+$router->get('admin/documents', 'AdminController@documents');
+$router->post('admin/updateDocumentStatus', 'AdminController@updateDocumentStatus');
 $router->post('admin/case/status', 'AdminController@updateCaseStatus');
 $router->post('admin/user/role', 'AdminController@updateUserRole');
 $router->post('admin/article/create', 'AdminController@createArticle');
