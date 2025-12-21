@@ -1,10 +1,11 @@
 <?php
-$baseUrl = ''; // если домен указывает прямо на эту папку (например, http://myusapassport/)
+$baseUrl = '';
 $GLOBALS['baseUrl'] = $baseUrl;
 
 $dbConfig = [
-    'host' => 'localhost',
-    'dbname' => 'usacitizenguide',
+    'host' => '127.0.0.1',
+    'port' => 3307,
+    'dbname' => 'myusapassport',
     'user' => 'root',
     'pass' => '',
     'charset' => 'utf8mb4',
