@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
+    console.log('JavaScript loaded successfully'); // Отладка
+
     // Предотвращаем вывод JSON на экран
     var originalWrite = document.write;
     document.write = function(content) {
@@ -21,6 +23,14 @@ document.addEventListener('DOMContentLoaded', function () {
         var method = (form.getAttribute('method') || 'GET').toUpperCase();
         var formData = new FormData(form);
 
+        console.log('AJAX Request Details:');
+        console.log('Action:', action);
+        console.log('Method:', method);
+        console.log('FormData:');
+        for (var pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
+
         fetch(action, {
             method: method,
             body: formData,
@@ -28,10 +38,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         }).then(function (resp) {
+            console.log('Response status:', resp.status);
+            console.log('Response headers:', resp.headers);
+            
             // Проверяем, что это AJAX-запрос
             if (!resp.headers.get('Content-Type') || !resp.headers.get('Content-Type').includes('application/json')) {
                 // Если не JSON, просто показываем ответ
                 return resp.text().then(function(text) {
+                    console.log('Response text:', text);
                     // Не выводим JSON на экран
                     if (text.startsWith('{')) {
                         return JSON.parse(text);
@@ -41,31 +55,69 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             return resp.json();
         }).then(function (data) {
+            console.log('Parsed data:', data);
             if (data && data.success) {
                 if (onSuccess) onSuccess(data);
             } else {
                 if (onError) onError(data || {success: false});
             }
         }).catch(function (err) {
+            console.error('AJAX Error:', err);
+            console.error('Error details:', err.message, err.stack);
             if (onError) onError({success: false, error: err});
         });
     }
 
     // Универсальные формы с классом .js-ajax
     document.querySelectorAll('form.js-ajax').forEach(function (form) {
+        console.log('Found js-ajax form:', form.getAttribute('action')); // Отладка
         form.addEventListener('submit', function (e) {
+            console.log('Form submitted:', form.getAttribute('action')); // Отладка
             e.preventDefault();
             var fallbackTargetId = form.getAttribute('data-target');
             var messageTargetId = form.getAttribute('data-message-target');
+            console.log('Form data targets:', {fallbackTargetId, messageTargetId}); // Отладка
 
             sendAjaxForm(form, function (data) {
+                console.log('AJAX success response:', data); // Отладка
                 var targetId = data.targetId || fallbackTargetId;
+                console.log('Target ID:', targetId); // Отладка
+
                 if (data.html && targetId) {
                     var target = document.getElementById(targetId);
+                    console.log('Target element found:', !!target); // Отладка
+                    console.log('Target element:', target); // Отладка
+
                     if (target) {
-                        target.innerHTML = data.html;
+                        // Если это case-checklists-list или case-documents-list, заменяем все содержимое (как в статьях)
+                        if (targetId === 'case-checklists-list' || targetId === 'case-documents-list') {
+                            console.log('Replacing HTML in', targetId); // Отладка
+                            console.log('HTML to set:', data.html); // Отладка
+                            console.log('Current target innerHTML:', target.innerHTML); // Отладка
+
+                            // Используем полную замену как в статьях
+                            target.innerHTML = data.html;
+                            
+                            console.log('HTML replaced successfully'); // Отладка
+                            console.log('New target innerHTML:', target.innerHTML); // Отладка
+                        } else {
+                            target.innerHTML = data.html;
+                        }
+                    } else {
+                        console.error('Target element not found:', targetId);
                     }
                 }
+
+                // Очищаем поля формы для чек-листов и документов
+                var titleInput = form.querySelector('input[name="title"]');
+                if (titleInput) titleInput.value = '';
+                var stepsTextarea = form.querySelector('textarea[name="steps"]');
+                if (stepsTextarea) stepsTextarea.value = '';
+                var stageInput = form.querySelector('input[name="stage"]');
+                if (stageInput) stageInput.value = '';
+                var fileInput = form.querySelector('input[type="file"]');
+                if (fileInput) fileInput.value = '';
+                
                 if (data.message) {
                     var msgId = data.messageTarget || messageTargetId;
                     if (msgId) {
@@ -78,8 +130,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.redirect) {
                     window.location.href = data.redirect;
                 }
-            }, function () {
-                // при ошибке пока ничего не делаем
+            }, function (error) {
+                console.log('AJAX error:', error); // Отладка
             });
         });
     });
@@ -154,15 +206,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (documentLi) {
                     documentLi.remove();
                     console.log('Document li removed from page');
-                }
-            }
-            
-            // Для форм модерации документов - обновляем статус
-            if (!isDeleteForm && data.success && action.includes('updateDocumentStatus')) {
-                var documentRow = form.closest('tr');
-                if (documentRow) {
-                    // Перезагружаем страницу для обновления статусов
-                    window.location.reload();
+                } else {
+                    // Если не нашли li, пробуем найти карточку документа
+                    var documentCard = form.closest('.card');
+                    if (documentCard && documentCard.id !== 'case-documents-list') {
+                        documentCard.remove();
+                        console.log('Document card removed from page');
+                    }
                 }
             }
             

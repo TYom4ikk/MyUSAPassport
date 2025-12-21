@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../models/Checklist.php';
+
 class ChecklistController extends Controller
 {
     public function index()
@@ -37,52 +39,60 @@ class ChecklistController extends Controller
         $checklistId = $model->saveForUser(Auth::userId(), $title, $steps, $caseId);
         
         if ($checklistId) {
-            // Возвращаем HTML для нового чек-листа
-            $checklist = $model->getById($checklistId);
-            ob_start();
-            ?>
-            <div class="card" style="margin-bottom: 10px; padding: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <h5><?php echo htmlspecialchars($checklist['title']); ?></h5>
-                        <div class="checklist-steps">
-                            <?php 
-                            $stepLines = explode("\n", trim($checklist['steps']));
-                            foreach ($stepLines as $index => $step): 
-                                if (!empty(trim($step))):
-                            ?>
-                                <div class="checklist-step">
-                                    <input type="checkbox" id="step_<?php echo $checklist['id'] . '_' . $index; ?>" 
-                                           data-checklist-id="<?php echo $checklist['id']; ?>" 
-                                           data-step-index="<?php echo $index; ?>">
-                                    <label for="step_<?php echo $checklist['id'] . '_' . $index; ?>">
-                                        <?php echo htmlspecialchars(trim($step)); ?>
-                                    </label>
+            // Проверяем AJAX запрос как в статьях
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            
+            if ($isAjax) {
+                // Получаем все чек-листы для этого кейса
+                $checklists = $model->getByCaseId($caseId);
+                ob_start();
+                ?>
+                <?php foreach ($checklists as $checklist): ?>
+                    <div class="card" style="margin-bottom: 10px; padding: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <h5><?php echo htmlspecialchars($checklist['title']); ?></h5>
+                                <div class="checklist-steps">
+                                    <?php 
+                                    $stepLines = explode("\n", trim($checklist['steps']));
+                                    foreach ($stepLines as $index => $step): 
+                                        if (!empty(trim($step))):
+                                    ?>
+                                        <div class="checklist-step">
+                                            <input type="checkbox" id="step_<?php echo $checklist['id'] . '_' . $index; ?>" 
+                                                   data-checklist-id="<?php echo $checklist['id']; ?>" 
+                                                   data-step-index="<?php echo $index; ?>">
+                                            <label for="step_<?php echo $checklist['id'] . '_' . $index; ?>">
+                                                <?php echo htmlspecialchars(trim($step)); ?>
+                                            </label>
+                                        </div>
+                                    <?php endif; endforeach; ?>
                                 </div>
-                            <?php endif; endforeach; ?>
+                            </div>
+                            <form method="post" action="index.php?route=checklists/delete" class="js-ajax-admin" style="margin-left: 10px;">
+                                <input type="hidden" name="checklist_id" value="<?php echo $checklist['id']; ?>">
+                                <input type="hidden" name="case_id" value="<?php echo $caseId; ?>">
+                                <button type="submit" class="btn btn-small" style="background: #dc3545; color: white;" onclick="return confirm('Удалить чек-лист?')">Удалить</button>
+                            </form>
                         </div>
                     </div>
-                    <form method="post" action="index.php?route=checklists/delete" style="margin-left: 10px;">
-                        <input type="hidden" name="checklist_id" value="<?php echo $checklist['id']; ?>">
-                        <input type="hidden" name="case_id" value="<?php echo $caseId; ?>">
-                        <button type="submit" class="btn btn-small" style="background: #dc3545; color: white;" onclick="return confirm('Удалить чек-лист?')">Удалить</button>
-                    </form>
-                </div>
-            </div>
-            <?php
-            $html = ob_get_clean();
-            
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'targetId' => 'checklists-list',
-                'html' => $html,
-                'message' => 'Чек-лист создан'
-            ]);
-        } else {
-            http_response_code(500);
-            echo json_encode(['error' => 'Ошибка при создании чек-листа']);
+                <?php endforeach; ?>
+                <?php
+                $html = ob_get_clean();
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success'  => true,
+                    'targetId' => 'case-checklists-list',
+                    'html'     => $html,
+                ]);
+                exit;
+            }
         }
+        
+        // Если не AJAX или ошибка
+        header('Location: index.php?route=case/view&id=' . $caseId);
         exit;
     }
     

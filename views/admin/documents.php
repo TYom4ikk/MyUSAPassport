@@ -14,6 +14,7 @@
 
 <div class="card">
     <h2>Документы на проверке</h2>
+    <div id="admin-pending-documents">
     
     <?php if (!empty($pendingDocuments)): ?>
         <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
@@ -42,7 +43,7 @@
                         </td>
                         <td style="padding: 12px;"><?php echo date('d.m.Y H:i', strtotime($doc['uploaded_at'])); ?></td>
                         <td style="padding: 12px; min-width: 300px;">
-                            <form method="post" action="index.php?route=admin/updateDocumentStatus" class="js-ajax-admin" style="display: block; white-space: nowrap;">
+                            <form method="post" action="index.php?route=admin/updateDocumentStatus" class="js-ajax-admin" data-target="admin-pending-documents" style="display: block; white-space: nowrap;">
                                 <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
                                 
                                 <div style="margin-bottom: 5px;">
@@ -68,6 +69,7 @@
             Документов на проверке нет
         </p>
     <?php endif; ?>
+    </div>
 </div>
 
 <div style="margin-top: 20px;">

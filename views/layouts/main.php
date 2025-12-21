@@ -1,6 +1,6 @@
 <?php
 if (!isset($pageTitle)) {
-    $pageTitle = 'USACitizenGuide';
+    $pageTitle = 'MyUSAPassport';
 }
 if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
     $baseUrl = $GLOBALS['baseUrl'];
@@ -85,7 +85,7 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
 
 <footer class="site-footer">
     <div class="container">
-        <p>USACitizenGuide &copy; <?php echo date('Y'); ?>. Ваш помощник в получении гражданства США.</p>
+        <p>MyUSAPassport &copy; <?php echo date('Y'); ?>. Ваш помощник в получении гражданства США.</p>
     </div>
 </footer>
 

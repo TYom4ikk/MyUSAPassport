@@ -54,15 +54,88 @@ class AdminController extends Controller
         
         $docModel = new CaseDocument();
         if ($docModel->updateStatus($documentId, $status, $adminComment)) {
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'message' => 'Статус документа обновлен'
-            ]);
-        } else {
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Ошибка при обновлении статуса']);
+            // Проверяем AJAX запрос как в статьях
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+                strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            
+            if ($isAjax) {
+                // Получаем обновленный список документов на проверке
+                $pendingDocuments = $docModel->getAllPending();
+                ob_start();
+                ?>
+                <?php if (!empty($pendingDocuments)): ?>
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">ID</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Пользователь</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Email</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Название документа</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Этап</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Файл</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Загружен</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #dee2e6;">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pendingDocuments as $doc): ?>
+                                <tr style="border-bottom: 1px solid #dee2e6;">
+                                    <td style="padding: 12px;"><?php echo $doc['id']; ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($doc['user_name']); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($doc['email']); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($doc['title']); ?></td>
+                                    <td style="padding: 12px;"><?php echo htmlspecialchars($doc['stage']); ?></td>
+                                    <td style="padding: 12px;">
+                                        <a href="<?php echo htmlspecialchars($doc['file_path']); ?>" target="_blank" class="btn btn-small">Открыть</a>
+                                    </td>
+                                    <td style="padding: 12px;"><?php echo date('d.m.Y H:i', strtotime($doc['uploaded_at'])); ?></td>
+                                    <td style="padding: 12px; min-width: 300px;">
+                                        <form method="post" action="index.php?route=admin/updateDocumentStatus" class="js-ajax-admin" data-target="admin-pending-documents" style="display: block; white-space: nowrap;">
+                                            <input type="hidden" name="document_id" value="<?php echo $doc['id']; ?>">
+                                            
+                                            <div style="margin-bottom: 5px;">
+                                                <select name="status" style="padding: 4px; width: 120px;">
+                                                    <option value="approved">Одобрить</option>
+                                                    <option value="rejected">Отклонить</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <div style="margin-bottom: 5px;">
+                                                <input type="text" name="admin_comment" placeholder="Комментарий (при отклонении)" style="padding: 4px; width: 100%;">
+                                            </div>
+                                            
+                                            <button type="submit" class="btn btn-small" style="padding: 4px 8px;">Сохранить</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                <?php else: ?>
+                    <p style="padding: 20px; text-align: center; color: #6c757d;">
+                        Документов на проверке нет
+                    </p>
+                <?php endif; ?>
+                <?php
+                $html = ob_get_clean();
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success'  => true,
+                    'targetId' => 'admin-pending-documents',
+                    'html'     => $html,
+                    'message'  => 'Статус документа обновлен'
+                ]);
+                exit;
+            }
+            
+            $_SESSION['success'] = 'Статус документа обновлен';
+            header('Location: index.php?route=admin/documents');
+            exit;
         }
+        
+        header('Content-Type: application/json');
+        echo json_encode(['error' => 'Ошибка при обновлении статуса документа']);
         exit;
     }
 

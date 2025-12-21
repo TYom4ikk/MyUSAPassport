@@ -127,7 +127,7 @@ require_once __DIR__ . '/../../models/Case.php';
     <h2>Документы</h2>
     <p>Загружайте документы, необходимые для вашего кейса:</p>
     
-    <form method="post" action="index.php?route=case/upload&case_id=<?php echo $case['id']; ?>" enctype="multipart/form-data" class="js-ajax-form">
+    <form method="post" action="index.php?route=case/upload&case_id=<?php echo $case['id']; ?>" enctype="multipart/form-data" class="js-ajax" data-target="case-documents-list" data-message-target="case-upload-message">
         <label>Этап/категория
             <input type="text" name="stage" placeholder="Например: Личные документы" required>
         </label>
@@ -173,14 +173,6 @@ require_once __DIR__ . '/../../models/Case.php';
                         
                         <?php if ($d['status'] === 'rejected' && !empty($d['admin_comment'])): ?>
                             <br><small style="color: #721c24;"><strong>Комментарий администратора:</strong> <?php echo htmlspecialchars($d['admin_comment']); ?></small>
-                        <?php endif; ?>
-                        
-                        <?php if ($d['status'] === 'pending' || $d['status'] === 'rejected'): ?>
-                            <br><form method="post" action="index.php?route=case/deleteDocument" class="js-ajax-admin" style="display: inline; margin-top: 5px;">
-                                <input type="hidden" name="document_id" value="<?php echo $d['id']; ?>">
-                                <input type="hidden" name="case_id" value="<?php echo $case['id']; ?>">
-                                <button type="submit" class="btn btn-small" style="background: #dc3545; color: white;" onclick="return confirm('Удалить документ?')">Удалить</button>
-                            </form>
                         <?php endif; ?>
                     </li>
                 <?php endforeach; ?>

@@ -24,10 +24,18 @@ class Checklist
         return $stmt->fetchAll();
     }
 
-    public function saveForUser(int $userId, string $title, string $steps, int $caseId = null): bool
+    public function saveForUser(int $userId, string $title, string $steps, int $caseId = null): int
     {
         $stmt = $this->pdo->prepare('INSERT INTO checklists (user_id, title, steps, case_id) VALUES (?, ?, ?, ?)');
-        return $stmt->execute([$userId, $title, $steps, $caseId]);
+        $stmt->execute([$userId, $title, $steps, $caseId]);
+        return (int)$this->pdo->lastInsertId();
+    }
+    
+    public function getById(int $checklistId): ?array
+    {
+        $stmt = $this->pdo->prepare('SELECT * FROM checklists WHERE id = ?');
+        $stmt->execute([$checklistId]);
+        return $stmt->fetch() ?: null;
     }
     
     public function updateCaseId(int $checklistId, int $caseId): bool
