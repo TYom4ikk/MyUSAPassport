@@ -5,15 +5,17 @@ class HomeController extends Controller
     public function index()
     {
         $pageTitle = 'Главная — MyUSAPassport';
+        $ogDescription = 'MyUSAPassport - ваш полный гид по получению гражданства США. Натурализация, Green Card, визы, документы и пошаговые инструкции.';
         $viewFile = __DIR__ . '/../views/home/index.php';
-        $this->view($viewFile, compact('pageTitle'));
+        $this->view($viewFile, compact('pageTitle', 'ogDescription'));
     }
 
     public function methods()
     {
         $pageTitle = 'Способы получения гражданства США';
+        $ogDescription = 'Все способы иммиграции в США: натурализация, Green Card, брак, инвестиции, служба в армии. Подробные инструкции и требования.';
         $viewFile = __DIR__ . '/../views/home/methods.php';
-        $this->view($viewFile, compact('pageTitle'));
+        $this->view($viewFile, compact('pageTitle', 'ogDescription'));
     }
 
     public function documents()

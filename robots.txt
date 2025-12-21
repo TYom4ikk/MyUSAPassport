@@ -1,0 +1,51 @@
+User-agent: *
+Allow: /
+
+# Основные страницы сайта
+Allow: /index.php
+Allow: /home
+Allow: /methods
+Allow: /articles
+Allow: /news
+Allow: /faq
+Allow: /contact
+Allow: /login
+Allow: /register
+
+# Разрешаем доступ к CSS, JS и изображениям
+Allow: /assets/css/
+Allow: /assets/js/
+Allow: /uploads/
+Allow: /assets/images/
+
+# Запрещаем доступ к админ-панели и служебным страницам
+Disallow: /admin
+Disallow: /profile
+Disallow: /case
+Disallow: /checklists
+Disallow: /wizard
+Disallow: /forgot
+Disallow: /reset
+
+# Запрещаем доступ к системным файлам
+Disallow: /config/
+Disallow: /core/
+Disallow: /controllers/
+Disallow: /models/
+Disallow: /views/
+Disallow: /vendor/
+Disallow: /.htaccess
+Disallow: /database.sql
+Disallow: /*.sql
+Disallow: /*.log
+Disallow: /*.txt
+
+# Запрещаем индексацию страниц с параметрами
+Disallow: /*?*
+Disallow: /*&
+
+# Указываем расположение Sitemap
+Sitemap: https://myusapassport.com/sitemap.xml
+
+# Хостинг
+Host: myusapassport.com

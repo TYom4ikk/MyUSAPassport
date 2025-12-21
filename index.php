@@ -96,6 +96,9 @@ $router->post('admin/testimonials/reject', 'AdminTestimonialController@reject');
 $router->get('wizard', 'WizardController@start');
 $router->post('wizard/submit', 'WizardController@submit');
 
+// обработка 404 ошибки
+$router->get('404', 'ErrorController@notFound');
+
 $route = isset($_GET['route']) ? trim((string)$_GET['route'], '/') : '';
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 

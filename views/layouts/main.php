@@ -13,6 +13,32 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($pageTitle); ?></title>
     <meta name="description" content="Простой справочник по получению гражданства США: способы, документы, FAQ, новости, статьи и чек-листы.">
+    
+    <!-- OpenGraph микроразметка для соцсетей -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($ogDescription ?? 'Простой справочник по получению гражданства США: способы, документы, FAQ, новости, статьи и чек-листы.'); ?>">
+    <meta property="og:site_name" content="MyUSAPassport">
+    <meta property="og:url" content="<?php echo $baseUrl; ?>/index.php<?php echo isset($_GET['route']) ? '?route=' . urlencode($_GET['route']) : ''; ?>">
+    
+    <!-- Изображение для превью -->
+    <meta property="og:image" content="<?php echo $baseUrl; ?>/assets/images/main-background.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
+    
+    <!-- Telegram специфичные теги -->
+    <meta property="telegram:channel" content="@myusapassport">
+    
+    <!-- Дополнительные мета-теги -->
+    <meta property="og:locale" content="ru_RU">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($pageTitle); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($ogDescription ?? 'Простой справочник по получению гражданства США: способы, документы, FAQ, новости, статьи и чек-листы.'); ?>">
+    <meta name="twitter:image" content="<?php echo $baseUrl; ?>/assets/images/main-background.jpg">
+    
     <link rel="stylesheet" href="<?php echo $baseUrl; ?>/assets/css/style.css">
     <?php
     $currentRoute = isset($_GET['route']) ? trim($_GET['route']) : '';

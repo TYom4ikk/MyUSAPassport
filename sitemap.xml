@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+    <!-- Основные страницы -->
+    <url>
+        <loc>https://myusapassport.com/index.php</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/home</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/contact</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+
+    <!-- Методы иммиграции -->
+    <url>
+        <loc>https://myusapassport.com/methods</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/naturalization</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/greencard</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/marriage</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/investment</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/military</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/methods/employment</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Информационные разделы -->
+    <url>
+        <loc>https://myusapassport.com/articles</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/news</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>0.8</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/faq</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.9</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/documents</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+
+    <!-- Пользовательские функции -->
+    <url>
+        <loc>https://myusapassport.com/login</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/register</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.5</priority>
+    </url>
+    
+    <url>
+        <loc>https://myusapassport.com/wizard</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.6</priority>
+    </url>
+
+    <!-- Технические страницы -->
+    <url>
+        <loc>https://myusapassport.com/sitemap.html</loc>
+        <lastmod>2025-12-22T02:39:00+00:00</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.4</priority>
+    </url>
+
+</urlset>
