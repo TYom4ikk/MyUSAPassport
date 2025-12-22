@@ -99,7 +99,19 @@ $router->post('wizard/submit', 'WizardController@submit');
 // обработка 404 ошибки
 $router->get('404', 'ErrorController@notFound');
 
-$route = isset($_GET['route']) ? trim((string)$_GET['route'], '/') : '';
+if (isset($_GET['route'])) {
+    $route = trim((string)$_GET['route'], '/');
+} else {
+    $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+    // убираем index.php
+    if ($uri === '/index.php') {
+        $route = '';
+    } else {
+        $route = trim($uri, '/');
+    }
+}
+
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
 $router->dispatch($route, $method);

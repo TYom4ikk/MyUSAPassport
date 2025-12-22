@@ -41,12 +41,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('Response status:', resp.status);
             console.log('Response headers:', resp.headers);
             
-            // Проверяем, что это AJAX-запрос
             if (!resp.headers.get('Content-Type') || !resp.headers.get('Content-Type').includes('application/json')) {
-                // Если не JSON, просто показываем ответ
                 return resp.text().then(function(text) {
                     console.log('Response text:', text);
-                    // Не выводим JSON на экран
                     if (text.startsWith('{')) {
                         return JSON.parse(text);
                     }

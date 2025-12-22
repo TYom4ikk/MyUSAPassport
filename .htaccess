@@ -1,62 +1,25 @@
-# MyUSAPassport - .htaccess configuration
+# MyUSAPassport - .htaccess (OSPanel-safe)
 
-# Включение движка рерайта
 RewriteEngine On
-
-# Базовая директория для проекта
 RewriteBase /
 
-# Обработка 404 ошибки - показ кастомной страницы
+# Кастомная 404 через роутер
 ErrorDocument 404 /index.php?route=404
 
-# Правила рерайта для красивых URL
-# Если запрашиваемый файл или директория не существуют
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
+# Если файл или папка существуют — отдать напрямую
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
 
-# Перенаправляем все запросы на index.php
-RewriteRule ^(.*)$ index.php [L]
+# Всё остальное — в index.php
+RewriteRule ^ index.php [L]
 
-# Безопасность - скрытие .htaccess
-<Files .htaccess>
-    Order allow,deny
-    Deny from all
+# Запрет доступа к .htaccess
+<Files ".htaccess">
+    Require all denied
 </Files>
 
-# Защита от просмотра чувствительных файлов
-<FilesMatch "\.(log|sql|txt|md)$">
-    Order allow,deny
-    Deny from all
+# Запрет доступа к чувствительным файлам
+<FilesMatch "\.(log|sql|md|txt)$">
+    Require all denied
 </FilesMatch>
-
-# Настройки PHP
-php_flag display_errors Off
-php_value error_reporting E_ALL & ~E_DEPRECATED & ~E_STRICT
-
-# Сжатие
-<IfModule mod_deflate.c>
-    AddOutputFilterByType DEFLATE text/plain
-    AddOutputFilterByType DEFLATE text/html
-    AddOutputFilterByType DEFLATE text/xml
-    AddOutputFilterByType DEFLATE text/css
-    AddOutputFilterByType DEFLATE application/xml
-    AddOutputFilterByType DEFLATE application/xhtml+xml
-    AddOutputFilterByType DEFLATE application/rss+xml
-    AddOutputFilterByType DEFLATE application/javascript
-    AddOutputFilterByType DEFLATE application/x-javascript
-</IfModule>
-
-# Кеширование
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresByType image/jpg "access plus 1 year"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/pdf "access plus 1 month"
-    ExpiresByType text/javascript "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType application/x-shockwave-flash "access plus 1 month"
-    ExpiresByType image/x-icon "access plus 1 year"
-</IfModule>
