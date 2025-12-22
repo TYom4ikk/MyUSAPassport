@@ -1,3 +1,6 @@
+<head>
+<meta name="google-site-verification" content="3OUYskCp3SF619dhHo0Jmv989eK0jhr5ysPTfHE1vSw" />
+</head>
 <div class="hero">
     <div class="hero-text">
         <h1>MyUSAPassport — ваш простой помощник по гражданству США</h1>
