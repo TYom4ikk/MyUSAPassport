@@ -51,6 +51,73 @@ if (!isset($baseUrl) && isset($GLOBALS['baseUrl'])) {
     }
     ?>
     <script src="<?php echo $baseUrl; ?>/assets/js/app.js" defer></script>
+
+    <!-- BreadcrumbList -->
+     <?php
+// Формируем текущий URL
+$pageUrl = $baseUrl . '/index.php' . (isset($_GET['route']) ? '?route=' . $_GET['route'] : '');
+
+// BreadcrumbList schema
+$breadcrumbSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "BreadcrumbList",
+    "itemListElement" => [
+        [
+            "@type" => "ListItem",
+            "position" => 1,
+            "name" => "Главная",
+            "item" => $baseUrl . "/"
+        ],
+        [
+            "@type" => "ListItem",
+            "position" => 2,
+            "name" => $pageTitle,
+            "item" => $pageUrl
+        ]
+    ]
+];
+?>
+
+<script type="application/ld+json">
+<?= json_encode($breadcrumbSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+</script>
+
+
+<!-- FAQPage -->
+
+<?php if (isset($_GET['route']) && $_GET['route'] === 'faq'):
+
+$faqSchema = [
+    "@context" => "https://schema.org",
+    "@type" => "FAQPage",
+    "mainEntity" => [
+        [
+            "@type" => "Question",
+            "name" => "Могу ли я подать документы, если ранее был отказ?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "Да. Отказ не означает пожизненный запрет. Важно устранить причины предыдущего отказа и подать документы повторно."
+            ]
+        ],
+        [
+            "@type" => "Question",
+            "name" => "Гарантирует ли MyUSAPassport получение визы в США?",
+            "acceptedAnswer" => [
+                "@type" => "Answer",
+                "text" => "Нет. Решение принимает визовый офицер. Сервис помогает подготовить документы, но не гарантирует результат."
+            ]
+        ]
+    ]
+];
+?>
+
+<script type="application/ld+json">
+<?= json_encode($faqSchema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>
+</script>
+
+<?php endif; ?>
+
+
 </head>
 <body>
 <header class="site-header">

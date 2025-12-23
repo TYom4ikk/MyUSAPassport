@@ -1,5 +1,3 @@
-# MyUSAPassport - .htaccess (OSPanel-safe)
-
 RewriteEngine On
 RewriteBase /
 
