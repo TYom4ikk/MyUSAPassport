@@ -39,13 +39,9 @@ Disallow: /database.sql
 Disallow: /*.sql
 Disallow: /*.log
 Disallow: /*.txt
-
 # Запрещаем индексацию страниц с параметрами
-Disallow: /*?*
 Disallow: /*&
-
 # Указываем расположение Sitemap
 Sitemap: https://myusapassport.com/sitemap.xml
-
 # Хостинг
 Host: myusapassport.com
